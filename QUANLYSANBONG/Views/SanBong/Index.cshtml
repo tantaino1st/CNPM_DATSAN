@@ -1,0 +1,101 @@
+@model IEnumerable<QUANLYSANBONG.Models.SanBong>
+@{
+    ViewData["Title"] = "Danh sách Sân Bóng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Quản lý Sân bóng</h6>
+        <a asp-action="Create" class="btn btn-sm btn-primary">
+            <i class="fa-solid fa-plus"></i> Thêm sân mới
+        </a>
+    </div>
+    <div class="card-body">
+        
+        <!-- Search Form -->
+        <form asp-action="Index" method="get" class="mb-4">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Tên sân..." />
+                </div>
+                <div class="col-md-3">
+                    <select name="maLoaiSan" class="form-select" asp-items="ViewBag.MaLoaiSan">
+                        <option value="">-- Tất cả Loại Sân --</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="trangThai" class="form-select">
+                        <option value="">-- Tất cả Trạng Thái --</option>
+                        <option value="Hoat dong" selected="@((string)ViewData["CurrentTrangThai"] == "Hoat dong")">Hoạt động</option>
+                        <option value="Bao tri" selected="@((string)ViewData["CurrentTrangThai"] == "Bao tri")">Bảo trì</option>
+                        <option value="Ngung hoat dong" selected="@((string)ViewData["CurrentTrangThai"] == "Ngung hoat dong")">Ngưng hoạt động</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-search"></i> Tìm kiếm</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Xóa lọc</a>
+                </div>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th width="50">ID</th>
+                        <th>Tên Sân</th>
+                        <th>Loại Sân</th>
+                        <th>Giá mặc định</th>
+                        <th>Trạng thái</th>
+                        <th width="150" class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.MaSan</td>
+                                <td><strong>@item.TenSan</strong></td>
+                                <td><span class="badge bg-info text-dark">@item.LoaiSan?.TenLoaiSan</span></td>
+                                <td class="text-end">@string.Format("{0:N0}", item.GiaMacDinh) đ</td>
+                                <td>
+                                    @if (item.TrangThai == "Hoat dong")
+                                    {
+                                        <span class="text-success"><i class="fa-solid fa-circle-check"></i> Hoạt động</span>
+                                    }
+                                    else if (item.TrangThai == "Bao tri")
+                                    {
+                                        <span class="text-warning"><i class="fa-solid fa-wrench"></i> Bảo trì</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger"><i class="fa-solid fa-ban"></i> Ngưng HĐ</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="Edit" asp-route-id="@item.MaSan" class="btn btn-sm btn-warning" title="Sửa">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@item.MaSan" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sân này?');">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Xóa">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">Không tìm thấy sân bóng nào phù hợp</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

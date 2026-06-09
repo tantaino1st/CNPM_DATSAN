@@ -1,0 +1,259 @@
+@model QUANLYSANBONG.Models.CaiDatViewModel
+@{
+    ViewData["Title"] = "Cài đặt hệ thống";
+    Layout = "_AdminLayout";
+}
+
+<link rel="stylesheet" href="~/css/cai-dat.css" asp-append-version="true" />
+
+<div class="mb-4">
+    <h3 class="fw-bold mb-1">Cài đặt hệ thống</h3>
+    <p class="text-muted small">Cấu hình sân, giá cả và thông báo</p>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+        <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row g-4">
+    <!-- Menu bên trái -->
+    <div class="col-md-3">
+        <div class="card settings-card overflow-hidden">
+            <div class="nav flex-column settings-menu" id="settings-tab" role="tablist">
+                <button class="nav-link active" id="st-info-tab" data-bs-toggle="pill" data-bs-target="#st-info" type="button" role="tab">
+                    <i class="fas fa-info-circle"></i> Thông tin sân
+                </button>
+                <button class="nav-link" id="st-hours-tab" data-bs-toggle="pill" data-bs-target="#st-hours" type="button" role="tab">
+                    <i class="fas fa-clock"></i> Giờ hoạt động
+                </button>
+                <button class="nav-link" id="st-notif-tab" data-bs-toggle="pill" data-bs-target="#st-notif" type="button" role="tab">
+                    <i class="fas fa-bell"></i> Thông báo
+                </button>
+                <button class="nav-link" id="st-account-tab" data-bs-toggle="pill" data-bs-target="#st-account" type="button" role="tab">
+                    <i class="fas fa-user-circle"></i> Tài khoản
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nội dung bên phải -->
+    <div class="col-md-9">
+        <div class="tab-content" id="settings-tabContent">
+            
+            <!-- Tab 1: Thông tin sân -->
+            <div class="tab-pane fade show active" id="st-info" role="tabpanel">
+                <div class="card settings-card p-4">
+                    <h5 class="fw-bold">Thông tin sân thể thao</h5>
+                    <p class="text-muted small mb-4">Cập nhật thông tin cơ sở của bạn</p>
+                    
+                    <form asp-action="UpdateThongTinSan" method="post" enctype="multipart/form-data">
+                        <div class="d-flex align-items-center gap-4 mb-4 pb-4 border-bottom">
+                            <div class="logo-preview" id="logo-preview-box">
+                                @if(!string.IsNullOrEmpty(Model.ThongTinSan.LogoUrl)) {
+                                    <img src="@Model.ThongTinSan.LogoUrl" style="width:100%; height:100%; object-fit:cover;" />
+                                } else {
+                                    <i class="fas fa-trophy"></i>
+                                }
+                            </div>
+                            <div>
+                                <input type="file" name="uploadLogo" id="uploadLogo" class="d-none" accept="image/*" />
+                                <button type="button" class="btn btn-outline-primary btn-sm mb-2" onclick="document.getElementById('uploadLogo').click()">Đổi logo</button>
+                                <p class="text-muted small mb-0">PNG, JPG - Tối đa 2MB</p>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Tên sân *</label>
+                                <input asp-for="ThongTinSan.TenSan" class="form-control" placeholder="Nhập tên sân" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Số điện thoại</label>
+                                <input asp-for="ThongTinSan.SoDienThoai" class="form-control" placeholder="09xx xxx xxx" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Địa chỉ</label>
+                                <input asp-for="ThongTinSan.DiaChi" class="form-control" placeholder="Số nhà, đường, phường/xã..." />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Email</label>
+                                <input asp-for="ThongTinSan.Email" class="form-control" type="email" placeholder="example@gmail.com" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Website</label>
+                                <input asp-for="ThongTinSan.Website" class="form-control" placeholder="www.sanbong.vn" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Mô tả</label>
+                                <textarea asp-for="ThongTinSan.MoTa" class="form-control" rows="4"></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-4 px-4 py-2 rounded-3 shadow-sm">Lưu thay đổi</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tab 2: Giờ hoạt động -->
+            <div class="tab-pane fade" id="st-hours" role="tabpanel">
+                <div class="card settings-card p-4">
+                    <h5 class="fw-bold">Giờ hoạt động</h5>
+                    <p class="text-muted small mb-4">Cài đặt giờ mở cửa và đóng cửa</p>
+                    
+                    <form asp-action="UpdateGioHoatDong" method="post">
+                        @for (int i = 0; i < Model.DanhSachGioHoatDong.Count; i++)
+                        {
+                            <input type="hidden" name="danhSachGio[@i].Id" value="@Model.DanhSachGioHoatDong[i].Id" />
+                            <input type="hidden" name="danhSachGio[@i].Thu" value="@Model.DanhSachGioHoatDong[i].Thu" />
+                            <div class="op-row">
+                                <div class="col-3 fw-bold">@Model.DanhSachGioHoatDong[i].Thu</div>
+                                <div class="col-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input toggle-hour" type="checkbox" name="danhSachGio[@i].DangHoatDong" value="true" @(Model.DanhSachGioHoatDong[i].DangHoatDong ? "checked" : "") />
+                                        <span class="ms-2 small text-muted">Hoạt động</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 d-flex align-items-center gap-2">
+                                    <input type="time" name="danhSachGio[@i].GioMoCua" class="form-control form-control-sm h-input" value="@Model.DanhSachGioHoatDong[i].GioMoCua.ToString(@"hh\:mm")" @(Model.DanhSachGioHoatDong[i].DangHoatDong ? "" : "disabled") />
+                                    <span class="small">đến</span>
+                                    <input type="time" name="danhSachGio[@i].GioDongCua" class="form-control form-control-sm h-input" value="@Model.DanhSachGioHoatDong[i].GioDongCua.ToString(@"hh\:mm")" @(Model.DanhSachGioHoatDong[i].DangHoatDong ? "" : "disabled") />
+                                </div>
+                            </div>
+                        }
+                        <button type="submit" class="btn btn-primary w-100 mt-3 py-2 shadow-sm">Lưu giờ hoạt động</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tab 3: Thông báo -->
+            <div class="tab-pane fade" id="st-notif" role="tabpanel">
+                <div class="card settings-card p-4">
+                    <h5 class="fw-bold">Cài đặt thông báo</h5>
+                    <p class="text-muted small mb-4">Chọn loại thông báo bạn muốn nhận</p>
+                    
+                    <form asp-action="UpdateThongBao" method="post">
+                        @for (int i = 0; i < Model.DanhSachThongBao.Count; i++)
+                        {
+                            <input type="hidden" name="danhSachThongBao[@i].Id" value="@Model.DanhSachThongBao[i].Id" />
+                            <div class="op-row justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-circle" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
+                                        <i class="@Model.DanhSachThongBao[i].Icon"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">@Model.DanhSachThongBao[i].TenThongBao</div>
+                                        <div class="text-muted small">@Model.DanhSachThongBao[i].MoTa</div>
+                                    </div>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="danhSachThongBao[@i].DangBat" value="true" @(Model.DanhSachThongBao[i].DangBat ? "checked" : "") />
+                                </div>
+                            </div>
+                        }
+                        <button type="submit" class="btn btn-primary w-100 mt-3 py-2 shadow-sm">Lưu cài đặt thông báo</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tab 4: Tài khoản -->
+            <div class="tab-pane fade" id="st-account" role="tabpanel">
+                <div class="card settings-card p-4">
+                    <h5 class="fw-bold">Thông tin tài khoản</h5>
+                    <p class="text-muted small mb-4">Cập nhật thông tin cá nhân và mật khẩu</p>
+                    
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:60px;height:60px;font-size:1.5rem;font-weight:bold;">
+                            @(Model.NguoiDung.HoTen?.FirstOrDefault() ?? 'A')
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-0">@Model.NguoiDung.HoTen</h6>
+                            <p class="text-muted small mb-0">@Model.NguoiDung.VaiTro</p>
+                        </div>
+                    </div>
+
+                    <form asp-action="UpdateTaiKhoan" method="post">
+                        <div class="row g-3 mb-4 pb-4 border-bottom">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Họ và tên</label>
+                                <input name="HoTen" class="form-control" value="@Model.NguoiDung.HoTen" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Số điện thoại</label>
+                                <input name="SoDienThoai" class="form-control" value="@Model.NguoiDung.SoDienThoai" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Email</label>
+                                <input name="Email" class="form-control" value="@Model.NguoiDung.Email" readonly />
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold">Đổi mật khẩu</h6>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Mật khẩu hiện tại</label>
+                                <input type="password" name="CurrentPassword" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Mật khẩu mới</label>
+                                <input type="password" name="NewPassword" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Xác nhận mật khẩu mới</label>
+                                <input type="password" name="ConfirmPassword" class="form-control" />
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm">Lưu tài khoản</button>
+                            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger">Đăng xuất</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Preview Logo
+            const uploadLogo = document.getElementById('uploadLogo');
+            if (uploadLogo) {
+                uploadLogo.addEventListener('change', function() {
+                    if (this.files && this.files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            document.getElementById('logo-preview-box').innerHTML = '<img src="' + e.target.result + '" style="width:100%; height:100%; object-fit:cover;" />';
+                        }
+                        reader.readAsDataURL(this.files[0]);
+                    }
+                });
+            }
+
+            // Toggle enable/disable input giờ
+            const toggles = document.querySelectorAll('.toggle-hour');
+            toggles.forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const row = this.closest('.op-row');
+                    const inputs = row.querySelectorAll('.h-input');
+                    inputs.forEach(input => {
+                        input.disabled = !this.checked;
+                    });
+                });
+            });
+        });
+    </script>
+}

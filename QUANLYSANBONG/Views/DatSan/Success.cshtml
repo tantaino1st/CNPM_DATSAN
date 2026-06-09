@@ -1,0 +1,50 @@
+@model QUANLYSANBONG.Models.DatSan
+@{
+    ViewData["Title"] = "Đặt sân thành công";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container section-padding pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card-custom p-5 text-center border border-success border-3">
+                <div class="mb-4">
+                    <i class="fa-solid fa-circle-check text-success" style="font-size: 5rem;"></i>
+                </div>
+                <h2 class="fw-bold text-success mb-3">Đặt Sân Thành Công!</h2>
+                <p class="text-muted fs-5 mb-4">Cảm ơn <strong>@Model.KhachHang?.HoTen</strong> đã đặt sân. Hệ thống đã ghi nhận yêu cầu của bạn.</p>
+
+                <div class="bg-light p-4 rounded-3 text-start mb-4">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Thông tin phiếu đặt</h5>
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted">Mã phiếu:</div>
+                        <div class="col-7 fw-bold text-primary">#@Model.MaDatSan</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted">Cơ sở:</div>
+                        <div class="col-7 fw-bold">@Model.SanBong?.TenSan</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted">Sân:</div>
+                        <div class="col-7 fw-bold">@Model.SanCon?.TenSanCon</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted">Thời gian:</div>
+                        <div class="col-7 fw-bold text-danger">@Model.NgayDat.ToString("dd/MM/yyyy") | @Model.GioBatDau.ToString(@"hh\:mm") - @Model.GioKetThuc.ToString(@"hh\:mm")</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5 text-muted">Tổng thanh toán:</div>
+                        <div class="col-7 fw-bold text-success fs-5">@string.Format("{0:N0}", Model.TongTien) đ</div>
+                    </div>
+                </div>
+
+                <p class="small text-muted mb-4"><i class="fa-solid fa-circle-info"></i> Nhân viên sẽ liên hệ với bạn qua số điện thoại <strong>@Model.KhachHang?.SoDienThoai</strong> để xác nhận lại trong ít phút.</p>
+
+                <div class="d-flex gap-3 justify-content-center">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary px-4 py-2 rounded-pill">Về trang chủ</a>
+                    <a asp-controller="SanBong" asp-action="TimSan" class="btn btn-primary-custom px-4 py-2">Tiếp tục đặt sân</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

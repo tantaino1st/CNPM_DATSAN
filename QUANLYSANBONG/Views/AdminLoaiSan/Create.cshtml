@@ -1,0 +1,59 @@
+@model QUANLYSANBONG.Models.LoaiSan
+@{
+    ViewData["Title"] = "Thêm loại sân";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="text-muted text-decoration-none small"><i class="fas fa-arrow-left me-1"></i> Quay lại danh sách</a>
+    <h3 class="fw-bold mt-2">Thêm loại sân mới</h3>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="TenLoaiSan" class="form-label fw-bold">Tên loại sân *</label>
+                        <input asp-for="TenLoaiSan" class="form-control" placeholder="VD: Bóng đá, Cầu lông..." required />
+                        <span asp-validation-for="TenLoaiSan" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Icon" class="form-label fw-bold">Icon (FontAwesome)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fas fa-icons"></i></span>
+                            <input asp-for="Icon" class="form-control border-start-0" placeholder="VD: fa-futbol, fa-medal..." />
+                        </div>
+                        <div class="form-text small">Dùng class của FontAwesome 6 (ví dụ: fa-futbol).</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="MoTa" class="form-label fw-bold">Mô tả</label>
+                        <textarea asp-for="MoTa" class="form-control" rows="4" placeholder="Nhập mô tả ngắn về loại sân..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary px-5 py-2 shadow-sm rounded-3 fw-bold">
+                        <i class="fas fa-save me-2"></i>LƯU THÔNG TIN
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 bg-info bg-opacity-10">
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-info mb-3"><i class="fas fa-info-circle me-2"></i>Hướng dẫn</h5>
+                <ul class="small text-dark opacity-75">
+                    <li class="mb-2"><strong>Tên loại sân:</strong> Hiển thị trên website và trong danh sách lọc.</li>
+                    <li class="mb-2"><strong>Icon:</strong> Sử dụng để trang trí trong menu và các thẻ sân bóng.</li>
+                    <li><strong>Mô tả:</strong> Cung cấp thêm thông tin chi tiết cho người dùng khi xem danh mục.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

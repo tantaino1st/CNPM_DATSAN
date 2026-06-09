@@ -1,0 +1,94 @@
+@model IEnumerable<QUANLYSANBONG.Models.HoaDon>
+@{
+    ViewData["Title"] = "Quản lý Hóa Đơn";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Danh sách Hóa Đơn</h6>
+    </div>
+    <div class="card-body">
+        
+        <!-- Search Form -->
+        <form asp-action="Index" method="get" class="mb-4">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label class="form-label small text-muted mb-0">Từ ngày thanh toán</label>
+                    <input type="date" name="fromDate" value="@ViewData["FromDate"]" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted mb-0">Đến ngày thanh toán</label>
+                    <input type="date" name="toDate" value="@ViewData["ToDate"]" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted mb-0">Trạng thái</label>
+                    <select name="trangThai" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        <option value="Chua thanh toan" selected="@((string)ViewData["CurrentTrangThai"] == "Chua thanh toan")">Chưa thanh toán</option>
+                        <option value="Da thanh toan" selected="@((string)ViewData["CurrentTrangThai"] == "Da thanh toan")">Đã thanh toán</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2"><i class="fa-solid fa-search"></i> Lọc</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Xóa lọc</a>
+                </div>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th width="50">ID</th>
+                        <th>Ngày thanh toán</th>
+                        <th>Khách hàng</th>
+                        <th>Sân</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th width="120" class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>#@item.MaHD</td>
+                                <td>@(item.NgayThanhToan?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                                <td>@(item.DatSan?.KhachHang?.HoTen ?? "Khách lẻ")</td>
+                                <td><span class="badge bg-info text-dark">@(item.DatSan?.SanBong?.TenSan)</span></td>
+                                <td class="text-end text-primary fw-bold">@string.Format("{0:N0}", item.TongTien) đ</td>
+                                <td>
+                                    @if (item.TrangThaiThanhToan == "Chua thanh toan")
+                                    {
+                                        <span class="badge bg-warning text-dark"><i class="fa-regular fa-clock"></i> Chưa thanh toán</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success"><i class="fa-solid fa-check"></i> Đã thanh toán</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="Edit" asp-route-id="@item.MaHD" class="btn btn-sm btn-info text-white" title="Chi tiết/Sửa">
+                                        <i class="fa-solid fa-file-invoice"></i>
+                                    </a>
+                                    <a asp-action="Print" asp-route-id="@item.MaHD" target="_blank" class="btn btn-sm btn-secondary" title="In">
+                                        <i class="fa-solid fa-print"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center">Không tìm thấy hóa đơn nào phù hợp</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

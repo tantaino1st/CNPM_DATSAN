@@ -1,0 +1,100 @@
+@model IEnumerable<QUANLYSANBONG.Models.KhachHang>
+@{
+    ViewData["Title"] = "Quản lý Khách Hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Danh sách Khách Hàng</h6>
+        <a asp-action="Create" class="btn btn-sm btn-primary">
+            <i class="fa-solid fa-plus"></i> Thêm khách hàng
+        </a>
+    </div>
+    <div class="card-body">
+        
+        <!-- Search Form -->
+        <form asp-action="Index" method="get" class="mb-4">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Tên hoặc Số điện thoại..." />
+                </div>
+                <div class="col-md-3">
+                    <select name="nhomKhach" class="form-select">
+                        <option value="">-- Tất cả nhóm khách --</option>
+                        <option value="Khach moi" selected="@((string)ViewData["CurrentNhom"] == "Khach moi")">Khách mới</option>
+                        <option value="Khach quen" selected="@((string)ViewData["CurrentNhom"] == "Khach quen")">Khách quen</option>
+                        <option value="Khach VIP" selected="@((string)ViewData["CurrentNhom"] == "Khach VIP")">Khách VIP</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-search"></i> Tìm kiếm</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Xóa lọc</a>
+                </div>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th width="50">ID</th>
+                        <th>Họ tên</th>
+                        <th>Số điện thoại</th>
+                        <th>Nhóm khách</th>
+                        <th>Ghi chú</th>
+                        <th width="150" class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.MaKH</td>
+                                <td><strong>@item.HoTen</strong></td>
+                                <td>
+                                    <a href="tel:@item.SoDienThoai" class="text-decoration-none">
+                                        <i class="fa-solid fa-phone"></i> @item.SoDienThoai
+                                    </a>
+                                </td>
+                                <td>
+                                    @if (item.NhomKhach == "Khach VIP")
+                                    {
+                                        <span class="badge bg-danger">VIP</span>
+                                    }
+                                    else if (item.NhomKhach == "Khach quen")
+                                    {
+                                        <span class="badge bg-success">Quen</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Mới</span>
+                                    }
+                                </td>
+                                <td>@item.GhiChu</td>
+                                <td class="text-center">
+                                    <a asp-action="Edit" asp-route-id="@item.MaKH" class="btn btn-sm btn-warning" title="Sửa">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@item.MaKH" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa khách hàng này?');">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Xóa">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">Không tìm thấy khách hàng nào phù hợp</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

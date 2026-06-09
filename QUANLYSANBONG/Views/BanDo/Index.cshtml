@@ -1,0 +1,94 @@
+@model QUANLYSANBONG.Models.BanDoViewModel
+@{
+    ViewData["Title"] = "Bản đồ sân bóng";
+}
+
+@section Styles {
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/bando.css" asp-append-version="true" />
+}
+
+<div class="map-page-wrapper">
+    <!-- Sidebar -->
+    <aside class="map-sidebar" id="map-sidebar">
+        <div class="sidebar-header">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0 text-primary"><i class="fa-solid fa-futbol me-2"></i>Sân bóng</h5>
+                <button class="btn btn-light btn-sm d-lg-none" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="count-label" class="small fw-bold text-muted">0 cơ sở</div>
+        </div>
+        <div class="sidebar-content" id="field-list">
+            <!-- Dữ liệu được load bằng JS -->
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-muted">Đang tải dữ liệu...</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Map Container -->
+    <div class="map-container-wrapper">
+        <!-- Floating Search & Filter -->
+        <div class="map-search-wrapper">
+            <div class="search-box-pill">
+                <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                <input type="text" id="map-search" placeholder="Tìm cơ sở theo tên, địa chỉ, quận...">
+                <i class="fa-solid fa-circle-xmark text-muted cursor-pointer" onclick="document.getElementById('map-search').value=''; loadSanBong();"></i>
+            </div>
+            <div class="filter-chips">
+                <div class="chip active" data-type="Tất cả">Tất cả</div>
+                <div class="chip" data-type="Bóng đá">Bóng đá</div>
+                <div class="chip" data-type="Cầu lông">Cầu lông</div>
+                <div class="chip" data-type="Tennis">Quần vợt</div>
+                <div class="chip" data-type="Pickleball">Pickleball</div>
+                <div class="chip" data-type="Bóng rổ">Bóng rổ</div>
+            </div>
+        </div>
+
+        <!-- Custom Controls -->
+        <div class="custom-map-controls">
+            <div class="control-btn" id="btn-zoom-in" title="Phóng to"><i class="fa-solid fa-plus"></i></div>
+            <div class="control-btn" id="btn-zoom-out" title="Thu nhỏ"><i class="fa-solid fa-minus"></i></div>
+            <div class="control-btn mt-3" id="btn-locate" title="Vị trí của tôi"><i class="fa-solid fa-location-crosshairs"></i></div>
+            
+            <div class="dropdown mt-3">
+                <div class="control-btn" data-bs-toggle="dropdown" aria-expanded="false" title="Đổi lớp bản đồ">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2">
+                    <li><button class="dropdown-item rounded" id="btn-osm">OpenStreetMap</button></li>
+                    <li><button class="dropdown-item rounded" id="btn-google">Google Maps</button></li>
+                    <li><button class="dropdown-item rounded" id="btn-satellite">Vệ tinh</button></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- The Map -->
+        <div id="map"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- MarkerCluster JS -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    <!-- Custom JS -->
+    <script src="~/js/bando.js" asp-append-version="true"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('map-sidebar');
+            if (sidebar.style.marginLeft === '-320px') {
+                sidebar.style.marginLeft = '0';
+            } else {
+                sidebar.style.marginLeft = '-320px';
+            }
+        }
+    </script>
+}

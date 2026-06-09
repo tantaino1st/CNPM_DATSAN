@@ -1,0 +1,358 @@
+@model QUANLYSANBONG.Models.TimSanViewModel
+@{
+    ViewData["Title"] = "Tìm sân thể thao";
+}
+
+@section Styles {
+    <style>
+        .timsan-header {
+            background: linear-gradient(90deg, var(--secondary-color) 0%, #3b82f6 100%);
+            padding: 40px 0 60px;
+            color: white;
+            position: relative;
+        }
+
+        .breadcrumb-custom {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .breadcrumb-custom a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .breadcrumb-custom a:hover {
+            text-decoration: underline;
+        }
+
+        .timsan-title {
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .search-bar-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            margin-top: 30px;
+        }
+
+        .search-bar-container .form-control, .search-bar-container .form-select {
+            border: none;
+            height: 50px;
+            border-radius: 8px;
+        }
+
+        .filter-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-bottom: 5px;
+        }
+
+        .filter-item:hover, .filter-item.active {
+            background-color: #dcfce7;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .filter-item i {
+            width: 25px;
+            font-size: 1.1rem;
+        }
+
+        /* San Bong Horizontal Card */
+        .san-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .san-card:hover {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transform: translateY(-2px);
+            border-color: #d1d5db;
+        }
+
+        .san-img {
+            width: 150px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .san-info {
+            flex-grow: 1;
+        }
+
+        .san-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-decoration: none;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .san-title:hover {
+            color: var(--primary-color);
+        }
+
+        .san-address {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .san-action {
+            text-align: right;
+            min-width: 150px;
+        }
+
+        .san-count {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+
+        /* Pagination */
+        .pagination-custom .page-link {
+            border: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            border-radius: 8px;
+            margin: 0 3px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pagination-custom .page-item.active .page-link {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .pagination-custom .page-link:hover:not(.active) {
+            background-color: #f3f4f6;
+        }
+
+        @@media (max-width: 768px) {
+            .san-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .san-img {
+                width: 100%;
+                height: 180px;
+            }
+            .san-action {
+                width: 100%;
+                text-align: left;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .san-count { margin-bottom: 0; }
+        }
+    </style>
+}
+
+<!-- Header -->
+<div class="timsan-header">
+    <div class="container">
+        <div class="breadcrumb-custom">
+            <a asp-controller="Home" asp-action="Index">Trang chủ</a> &nbsp;<i class="fa-solid fa-angle-right fa-sm"></i>&nbsp; Tìm sân
+        </div>
+        <h1 class="timsan-title">Tìm sân thể thao</h1>
+        <p class="fs-5 mb-0">Tìm thấy @Model.TotalItems cơ sở phù hợp</p>
+
+        <form asp-action="TimSan" method="get" class="search-bar-container">
+            <!-- Giữ lại giá trị sort và page nếu có để filter ko bị mất -->
+            <input type="hidden" name="sort" value="@Model.Sort" />
+            <div class="row g-2">
+                <div class="col-md-5">
+                    <input type="text" name="keyword" value="@Model.Keyword" class="form-control" placeholder="Tên sân, khu vực...">
+                </div>
+                <div class="col-md-3">
+                    <select name="loaiSanId" class="form-select">
+                        <option value="">Tất cả loại sân</option>
+                        @foreach (var loai in Model.DanhSachLoaiSan)
+                        {
+                            if (Model.LoaiSanId == loai.MaLoaiSan)
+                            {
+                                <option value="@loai.MaLoaiSan" selected>@loai.TenLoaiSan</option>
+                            }
+                            else
+                            {
+                                <option value="@loai.MaLoaiSan">@loai.TenLoaiSan</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="tinhThanh" class="form-select">
+                        <option value="">Tất cả Tỉnh/Thành</option>
+                        <option value="TP. Hồ Chí Minh" selected="@(Model.TinhThanh == "TP. Hồ Chí Minh")">TP. Hồ Chí Minh</option>
+                        <option value="Hà Nội" selected="@(Model.TinhThanh == "Hà Nội")">Hà Nội</option>
+                        <option value="Đà Nẵng" selected="@(Model.TinhThanh == "Đà Nẵng")">Đà Nẵng</option>
+                        <option value="Bình Dương" selected="@(Model.TinhThanh == "Bình Dương")">Bình Dương</option>
+                        <option value="Cần Thơ" selected="@(Model.TinhThanh == "Cần Thơ")">Cần Thơ</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary-custom w-100 h-100" style="border-radius: 8px;"><i class="fa-solid fa-search"></i> Tìm ngay</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="container section-padding pb-5">
+    <div class="row">
+        <!-- Cột trái: Bộ lọc -->
+        <div class="col-lg-3 mb-4">
+            <div class="filter-card">
+                <h4 class="filter-title">Loại sân</h4>
+                <div class="d-flex flex-column">
+                    <a href="@Url.Action("TimSan", new { keyword = Model.Keyword, tinhThanh = Model.TinhThanh, sort = Model.Sort })" 
+                       class="filter-item @(!Model.LoaiSanId.HasValue ? "active" : "")">
+                        <i class="fa-solid fa-border-all"></i> Tất cả
+                    </a>
+                    @foreach (var loai in Model.DanhSachLoaiSan)
+                    {
+                        <a href="@Url.Action("TimSan", new { keyword = Model.Keyword, loaiSanId = loai.MaLoaiSan, tinhThanh = Model.TinhThanh, sort = Model.Sort })" 
+                           class="filter-item @(Model.LoaiSanId == loai.MaLoaiSan ? "active" : "")">
+                            <i class="fa-solid @(loai.Icon ?? "fa-futbol")"></i> @loai.TenLoaiSan
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <div class="filter-card">
+                <h4 class="filter-title">Sắp xếp</h4>
+                <form asp-action="TimSan" method="get" id="sortForm">
+                    <input type="hidden" name="keyword" value="@Model.Keyword" />
+                    <input type="hidden" name="loaiSanId" value="@Model.LoaiSanId" />
+                    <input type="hidden" name="tinhThanh" value="@Model.TinhThanh" />
+                    
+                    <select name="sort" class="form-select bg-light" onchange="document.getElementById('sortForm').submit();">
+                        <option value="">Mới nhất</option>
+                        <option value="price_asc" selected="@(Model.Sort == "price_asc")">Giá thấp đến cao</option>
+                        <option value="price_desc" selected="@(Model.Sort == "price_desc")">Giá cao đến thấp</option>
+                        <option value="name_az" selected="@(Model.Sort == "name_az")">Tên A-Z</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+
+        <!-- Cột phải: Danh sách sân -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <p class="mb-0 fw-bold text-muted">@Model.TotalItems cơ sở • Trang @Model.CurrentPage/@Model.TotalPages</p>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary active"><i class="fa-solid fa-list"></i></button>
+                    <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-grid-2"></i></button>
+                </div>
+            </div>
+
+            @if (Model.DanhSachSan.Any())
+            {
+                foreach (var san in Model.DanhSachSan)
+                {
+                    var imgUrl = !string.IsNullOrEmpty(san.HinhAnh) ? san.HinhAnh : "https://via.placeholder.com/150x110.png?text=No+Image";
+                    
+                    <div class="san-card">
+                        <img src="@imgUrl" alt="@san.TenSan" class="san-img" onerror="this.src='https://via.placeholder.com/150x110.png?text=No+Image'">
+                        
+                        <div class="san-info">
+                            <a href="#" class="san-title">@san.TenSan</a>
+                            <p class="san-address"><i class="fa-solid fa-location-dot text-danger me-1"></i> @(san.DiaChi ?? "Đang cập nhật địa chỉ")</p>
+                            <a href="#" class="text-decoration-none text-muted small"><i class="fa-solid fa-circle-info me-1"></i> Xem chi tiết</a>
+                        </div>
+
+                        <div class="san-action">
+                            <p class="san-count"><i class="fa-solid fa-layer-group me-1"></i> @san.SoLuongSanCon sân</p>
+                            <a asp-controller="DatSan" asp-action="CreateClient" asp-route-maSan="@san.MaSan" class="btn btn-primary-custom d-inline-block text-center">Đặt sân</a>
+                        </div>
+                    </div>
+                }
+
+                <!-- Phân trang -->
+                @if (Model.TotalPages > 1)
+                {
+                    <nav class="mt-4 d-flex justify-content-center">
+                        <ul class="pagination pagination-custom">
+                            @if (Model.CurrentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("TimSan", new { keyword = Model.Keyword, loaiSanId = Model.LoaiSanId, tinhThanh = Model.TinhThanh, sort = Model.Sort, page = Model.CurrentPage - 1 })">
+                                        <i class="fa-solid fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                            }
+
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("TimSan", new { keyword = Model.Keyword, loaiSanId = Model.LoaiSanId, tinhThanh = Model.TinhThanh, sort = Model.Sort, page = i })">@i</a>
+                                </li>
+                            }
+
+                            @if (Model.CurrentPage < Model.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("TimSan", new { keyword = Model.Keyword, loaiSanId = Model.LoaiSanId, tinhThanh = Model.TinhThanh, sort = Model.Sort, page = Model.CurrentPage + 1 })">
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fa-solid fa-magnifying-glass fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">Không tìm thấy cơ sở nào phù hợp</h4>
+                    <p>Vui lòng thử lại với từ khóa hoặc bộ lọc khác.</p>
+                    <a asp-action="TimSan" class="btn btn-outline-success rounded-pill mt-2">Xóa bộ lọc</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

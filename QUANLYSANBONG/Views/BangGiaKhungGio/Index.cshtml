@@ -1,0 +1,63 @@
+@model IEnumerable<QUANLYSANBONG.Models.BangGiaKhungGio>
+@{
+    ViewData["Title"] = "Bảng Giá Khung Giờ";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Quản lý Bảng giá theo khung giờ</h6>
+        <a asp-action="Create" class="btn btn-sm btn-primary">
+            <i class="fa-solid fa-plus"></i> Thêm khung giờ
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ngày trong tuần</th>
+                        <th>Khung giờ</th>
+                        <th>Đơn giá (VNĐ)</th>
+                        <th>Phụ thu cao điểm (VNĐ)</th>
+                        <th width="150" class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@item.NgayTrongTuan</strong></td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        <i class="fa-regular fa-clock"></i> @item.GioBatDau.ToString(@"hh\:mm") - @item.GioKetThuc.ToString(@"hh\:mm")
+                                    </span>
+                                </td>
+                                <td class="text-end text-primary fw-bold">@string.Format("{0:N0}", item.DonGia)</td>
+                                <td class="text-end text-danger">@string.Format("{0:N0}", item.PhuThuCaoDiem)</td>
+                                <td class="text-center">
+                                    <a asp-action="Edit" asp-route-id="@item.MaBangGia" class="btn btn-sm btn-warning" title="Sửa">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@item.MaBangGia" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bảng giá này?');">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Xóa">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">Chưa có dữ liệu</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

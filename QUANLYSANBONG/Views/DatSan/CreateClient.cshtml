@@ -1,0 +1,444 @@
+@model QUANLYSANBONG.Models.DatSanViewModel
+@{
+    ViewData["Title"] = "Đặt sân thể thao";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        body { background-color: #f8fafc; }
+        .booking-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: none;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .booking-card-header {
+            background: white;
+            padding: 20px 25px;
+            border-bottom: 1px solid #f1f5f9;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--secondary-color);
+        }
+        .booking-card-body { padding: 25px; }
+        
+        .facility-info { display: flex; gap: 15px; align-items: center; }
+        .facility-img { width: 80px; height: 60px; object-fit: cover; border-radius: 8px; }
+        .facility-details h5 { font-weight: 700; margin-bottom: 5px; }
+        
+        .san-con-btn {
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: block;
+            width: 100%;
+        }
+        .san-con-btn:hover { border-color: var(--primary-color); }
+        .san-con-btn.active {
+            border-color: var(--primary-color);
+            background-color: #f0fdf4;
+            box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+        }
+
+        .time-duration-btn {
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .time-duration-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .time-slot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .time-slot-btn {
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            padding: 10px 0;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .time-slot-btn:hover:not(:disabled) { border-color: var(--primary-color); color: var(--primary-color); }
+        .time-slot-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .time-slot-btn:disabled {
+            background: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
+            border-color: #e2e8f0;
+        }
+
+        .summary-card { position: sticky; top: 100px; }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+        .summary-label { color: #64748b; }
+        .summary-value { font-weight: 600; text-align: right; }
+        
+        .form-control-icon { position: relative; }
+        .form-control-icon i {
+            position: absolute; left: 15px; top: 15px; color: #94a3b8;
+        }
+        .form-control-icon input, .form-control-icon textarea {
+            padding-left: 40px; border-radius: 10px;
+        }
+    </style>
+}
+
+<div class="container section-padding">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold" style="color: var(--secondary-color);">Đặt sân thể thao</h2>
+        <p class="text-muted">Hoàn tất đặt sân chỉ trong vài bước đơn giản</p>
+    </div>
+
+    <form asp-action="CreateClient" method="post" id="bookingForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="MaSan" />
+        <input type="hidden" asp-for="MaSanCon" id="hdnMaSanCon" />
+        <input type="hidden" asp-for="ThoiLuong" id="hdnThoiLuong" value="1" />
+        <input type="hidden" asp-for="GioBatDau" id="hdnGioBatDau" />
+        <input type="hidden" asp-for="TongTien" id="hdnTongTien" />
+        <input type="hidden" id="hdnDonGia" value="@Model.GiaMacDinh" />
+
+        <div class="row">
+            <!-- Cột trái: Form nhập -->
+            <div class="col-lg-8">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger booking-card p-3">
+                        <div asp-validation-summary="All" class="mb-0"></div>
+                    </div>
+                }
+
+                <!-- Bước 1: Cơ sở -->
+                <div class="booking-card">
+                    <div class="booking-card-header">
+                        <i class="fa-solid fa-circle-check text-success me-2"></i> 1. Cơ sở đã chọn
+                    </div>
+                    <div class="booking-card-body d-flex justify-content-between align-items-center">
+                        <div class="facility-info">
+                            @{ var img = string.IsNullOrEmpty(Model.HinhAnh) ? "https://via.placeholder.com/80x60" : Model.HinhAnh; }
+                            <img src="@img" class="facility-img" alt="San bong">
+                            <div class="facility-details">
+                                <h5>@Model.TenSan</h5>
+                                <p class="text-muted small mb-0"><i class="fa-solid fa-location-dot me-1"></i> @Model.DiaChi</p>
+                                <span class="badge bg-light text-dark border mt-1">@Model.DanhSachSanCon.Count sân con</span>
+                            </div>
+                        </div>
+                        <a asp-controller="SanBong" asp-action="TimSan" class="btn btn-outline-secondary btn-sm rounded-pill px-3">Đổi</a>
+                    </div>
+                </div>
+
+                <!-- Bước 2: Chọn sân và lịch -->
+                <div class="booking-card">
+                    <div class="booking-card-header">
+                        <i class="fa-solid fa-calendar-days text-primary me-2"></i> 2. Chọn sân & lịch
+                    </div>
+                    <div class="booking-card-body">
+                        <h6 class="fw-bold mb-3">Chọn sân</h6>
+                        <div class="row g-2 mb-4">
+                            @foreach (var sc in Model.DanhSachSanCon)
+                            {
+                                <div class="col-sm-6">
+                                    <button type="button" class="san-con-btn" data-id="@sc.MaSanCon" data-name="@sc.TenSanCon">
+                                        <div class="fw-bold">@sc.TenSanCon</div>
+                                        <div class="text-muted small">Sức chứa: @sc.SucChua người</div>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Ngày đặt sân</h6>
+                                <input asp-for="NgayDat" type="date" class="form-control" id="inpNgayDat" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3 mt-3 mt-md-0">Thời lượng</h6>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="time-duration-btn active" data-val="1">1h</button>
+                                    <button type="button" class="time-duration-btn" data-val="1.5">1.5h</button>
+                                    <button type="button" class="time-duration-btn" data-val="2">2h</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold mb-3">Giờ bắt đầu</h6>
+                        <div class="time-slot-grid" id="timeGrid">
+                            <!-- JS sẽ render nút giờ ở đây -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bước 3: Thông tin liên hệ -->
+                <div class="booking-card">
+                    <div class="booking-card-header">
+                        <i class="fa-solid fa-address-card text-warning me-2"></i> 3. Thông tin liên hệ
+                    </div>
+                    <div class="booking-card-body">
+                        @{
+                            var isUserLoggedIn = Context.Session.GetString("TenDangNhap") != null;
+                        }
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Họ và tên <span class="text-danger">*</span></label>
+                                <div class="form-control-icon">
+                                    <i class="fa-solid fa-user"></i>
+                                    <input asp-for="HoTen" class="form-control" placeholder="Nhập họ tên" id="inpHoTen" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Số điện thoại <span class="text-danger">*</span></label>
+                                <div class="form-control-icon">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <input asp-for="SoDienThoai" class="form-control" placeholder="Nhập số điện thoại" id="inpSdt" required />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Email (Tùy chọn)</label>
+                                <div class="form-control-icon">
+                                    <i class="fa-solid fa-envelope"></i>
+                                    <input asp-for="Email" type="email" class="form-control" placeholder="Nhập email" />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Ghi chú</label>
+                                <div class="form-control-icon">
+                                    <i class="fa-solid fa-comment-dots"></i>
+                                    <textarea asp-for="GhiChu" class="form-control" rows="2" placeholder="Ghi chú thêm cho chủ sân..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cột phải: Tóm tắt -->
+            <div class="col-lg-4">
+                <div class="booking-card summary-card">
+                    <div class="booking-card-header text-center">
+                        Tóm tắt đơn đặt sân
+                    </div>
+                    <div class="booking-card-body">
+                        <div class="summary-row">
+                            <span class="summary-label">Cơ sở</span>
+                            <span class="summary-value">@Model.TenSan</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Sân</span>
+                            <span class="summary-value text-primary" id="sumSan">Chưa chọn</span>
+                        </div>
+                        <hr class="text-muted" />
+                        <div class="summary-row">
+                            <span class="summary-label">Ngày</span>
+                            <span class="summary-value" id="sumNgay">@Model.NgayDat.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Thời lượng</span>
+                            <span class="summary-value" id="sumThoiLuong">1 giờ</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Giờ</span>
+                            <span class="summary-value" id="sumGio">Chưa chọn</span>
+                        </div>
+                        <hr class="text-muted" />
+                        <div class="summary-row align-items-center mt-3">
+                            <span class="summary-label fw-bold text-dark fs-5">Tổng thanh toán</span>
+                            <span class="summary-value text-success fs-4" id="sumTien">--</span>
+                        </div>
+                        
+                        @if (isUserLoggedIn)
+                        {
+                            <button type="submit" class="btn btn-primary-custom w-100 mt-4 py-3 fs-5" id="btnSubmit" disabled>
+                                <i class="fa-solid fa-check-circle me-2"></i> Xác nhận đặt sân
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-primary-custom w-100 mt-4 py-3 fs-5" data-bs-toggle="modal" data-bs-target="#loginModal" id="btnSubmitFake" disabled>
+                                <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> Đăng nhập để đặt sân
+                            </button>
+                        }
+                        <p class="text-center text-muted small mt-3 mb-0"><i class="fa-solid fa-shield-halved text-success me-1"></i> Hủy trước 2 giờ miễn phí</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            let bookedTimes = [];
+            
+            // Render Grid Giờ
+            function renderTimeGrid() {
+                let html = '';
+                for (let i = 6; i <= 21; i++) {
+                    let hourStr = (i < 10 ? '0' + i : i) + ':00';
+                    html += `<button type="button" class="time-slot-btn" data-time="${hourStr}">${hourStr}</button>`;
+                }
+                $('#timeGrid').html(html);
+            }
+            renderTimeGrid();
+
+            // Format tiền
+            function formatVND(n) {
+                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n);
+            }
+
+            // Tính toán tổng hợp
+            function updateSummary() {
+                let maSanCon = $('#hdnMaSanCon').val();
+                let tenSanCon = $('.san-con-btn.active').data('name');
+                let ngayDat = $('#inpNgayDat').val();
+                let thoiLuong = parseFloat($('#hdnThoiLuong').val());
+                let gioBatDau = $('#hdnGioBatDau').val();
+                let donGia = parseFloat($('#hdnDonGia').val() || 200000); // Tạm tính 200k/h
+
+                if (tenSanCon) $('#sumSan').text(tenSanCon);
+                else $('#sumSan').text("Chưa chọn");
+
+                if (ngayDat) {
+                    let d = new Date(ngayDat);
+                    $('#sumNgay').text(d.toLocaleDateString('vi-VN'));
+                }
+
+                $('#sumThoiLuong').text(thoiLuong + " giờ");
+
+                let isValid = true;
+
+                if (gioBatDau) {
+                    let startH = parseInt(gioBatDau.split(':')[0]);
+                    let endH = startH + thoiLuong;
+                    let endHStr = Math.floor(endH) + (endH % 1 === 0 ? ':00' : ':30');
+                    if (Math.floor(endH) < 10) endHStr = '0' + endHStr;
+                    $('#sumGio').text(gioBatDau + " - " + endHStr);
+                } else {
+                    $('#sumGio').text("Chưa chọn");
+                    isValid = false;
+                }
+
+                if (!maSanCon) isValid = false;
+
+                let hoten = $('#inpHoTen').val().trim();
+                let sdt = $('#inpSdt').val().trim();
+                if (!hoten || !sdt) isValid = false;
+
+                if (maSanCon && gioBatDau) {
+                    let total = donGia * thoiLuong;
+                    $('#sumTien').text(formatVND(total));
+                    $('#hdnTongTien').val(total);
+                } else {
+                    $('#sumTien').text("--");
+                }
+
+                $('#btnSubmit').prop('disabled', !isValid);
+                $('#btnSubmitFake').prop('disabled', !isValid);
+            }
+
+            // Gọi API kiểm tra giờ trống
+            function fetchAvailableTimes() {
+                let maSanCon = $('#hdnMaSanCon').val();
+                let ngayDat = $('#inpNgayDat').val();
+                if (!maSanCon || !ngayDat) return;
+
+                $.get(`/DatSan/GetAvailableTimes?maSanCon=${maSanCon}&ngayDat=${ngayDat}`, function (data) {
+                    bookedTimes = data;
+                    checkTimeSlots();
+                });
+            }
+
+            function checkTimeSlots() {
+                let thoiLuong = parseFloat($('#hdnThoiLuong').val());
+                
+                $('.time-slot-btn').each(function () {
+                    let btn = $(this);
+                    let timeStr = btn.data('time');
+                    let startH = parseInt(timeStr.split(':')[0]);
+                    let endH = startH + thoiLuong;
+                    
+                    let isConflict = false;
+                    
+                    // Logic kiểm tra xem [startH, endH] có đụng vào bookedTimes không
+                    bookedTimes.forEach(function(b) {
+                        let bStart = parseInt(b.gioBatDau.split(':')[0]);
+                        let bEnd = parseInt(b.gioKetThuc.split(':')[0]);
+                        if ((startH >= bStart && startH < bEnd) || 
+                            (endH > bStart && endH <= bEnd) ||
+                            (startH <= bStart && endH >= bEnd)) {
+                                isConflict = true;
+                        }
+                    });
+
+                    if (isConflict) {
+                        btn.prop('disabled', true);
+                        btn.removeClass('active');
+                        if ($('#hdnGioBatDau').val() == timeStr + ":00") {
+                            $('#hdnGioBatDau').val("");
+                        }
+                    } else {
+                        btn.prop('disabled', false);
+                    }
+                });
+                updateSummary();
+            }
+
+            // Events
+            $('.san-con-btn').click(function () {
+                $('.san-con-btn').removeClass('active');
+                $(this).addClass('active');
+                $('#hdnMaSanCon').val($(this).data('id'));
+                fetchAvailableTimes();
+            });
+
+            $('#inpNgayDat').change(function () {
+                $('#hdnGioBatDau').val(""); // Reset giờ
+                $('.time-slot-btn').removeClass('active');
+                fetchAvailableTimes();
+            });
+
+            $('.time-duration-btn').click(function () {
+                $('.time-duration-btn').removeClass('active');
+                $(this).addClass('active');
+                $('#hdnThoiLuong').val($(this).data('val'));
+                checkTimeSlots(); // check xem giờ hiện tại có hợp lệ với thời lượng mới ko
+            });
+
+            $(document).on('click', '.time-slot-btn:not(:disabled)', function () {
+                $('.time-slot-btn').removeClass('active');
+                $(this).addClass('active');
+                $('#hdnGioBatDau').val($(this).data('time') + ":00");
+                updateSummary();
+            });
+
+            $('#inpHoTen, #inpSdt').on('input', updateSummary);
+        });
+    </script>
+}

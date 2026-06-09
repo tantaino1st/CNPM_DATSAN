@@ -1,0 +1,62 @@
+@model QUANLYSANBONG.Models.HoaDon
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="TienSan" class="form-label">Tiền sân (VNĐ)</label>
+        <input asp-for="TienSan" type="number" class="form-control" readonly="@(ViewContext.RouteData.Values["action"]?.ToString() == "Create" ? null : "readonly")" />
+        <span asp-validation-for="TienSan" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label asp-for="TienDichVu" class="form-label">Tiền dịch vụ (VNĐ)</label>
+        <input asp-for="TienDichVu" type="number" class="form-control bg-light" readonly />
+        <span asp-validation-for="TienDichVu" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="GiamGia" class="form-label">Giảm giá (VNĐ)</label>
+        <input asp-for="GiamGia" type="number" class="form-control" />
+        <span asp-validation-for="GiamGia" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label asp-for="PhuThu" class="form-label">Phụ thu khác (VNĐ)</label>
+        <input asp-for="PhuThu" type="number" class="form-control" />
+        <span asp-validation-for="PhuThu" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="TongTien" class="form-label fw-bold text-danger">Tổng tiền phải thanh toán (VNĐ)</label>
+        <input asp-for="TongTien" type="number" class="form-control bg-light fw-bold text-danger" readonly />
+        <span asp-validation-for="TongTien" class="text-danger"></span>
+        <small class="text-muted">(Đã trừ tiền cọc nếu có)</small>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label asp-for="PhuongThucThanhToan" class="form-label">Phương thức thanh toán <span class="text-danger">*</span></label>
+        <select asp-for="PhuongThucThanhToan" class="form-select">
+            <option value="Tien mat">Tiền mặt</option>
+            <option value="Chuyen khoan">Chuyển khoản</option>
+        </select>
+        <span asp-validation-for="PhuongThucThanhToan" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="mb-4">
+    <label asp-for="TrangThaiThanhToan" class="form-label">Trạng thái thanh toán <span class="text-danger">*</span></label>
+    <select asp-for="TrangThaiThanhToan" class="form-select">
+        <option value="Chua thanh toan">Chưa thanh toán</option>
+        <option value="Da thanh toan">Đã thanh toán</option>
+    </select>
+    <span asp-validation-for="TrangThaiThanhToan" class="text-danger"></span>
+</div>
+
+<div class="mt-4 pt-3 border-top">
+    <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-save"></i> Cập nhật / Lưu Hóa Đơn
+    </button>
+</div>

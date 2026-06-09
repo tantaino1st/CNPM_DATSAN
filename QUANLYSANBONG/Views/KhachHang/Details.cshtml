@@ -1,0 +1,19 @@
+@model QUANLYSANBONG.Models.KhachHang
+@{
+    Layout = "_AdminLayout";
+}
+<div class="page-card p-4">
+    <h2 class="h5">@Model.HoTen</h2>
+    <p class="text-muted">Dien thoai: @Model.SoDienThoai - Nhom: @Model.NhomKhach</p>
+    <h3 class="h6 mt-4">Lich su dat san</h3>
+    <table class="table">
+        <thead class="table-light"><tr><th>Ngay</th><th>San</th><th>Trang thai</th><th>Tien coc</th></tr></thead>
+        <tbody>
+        @foreach (var item in Model.DatSans.OrderByDescending(x => x.NgayDat))
+        {
+            <tr><td>@item.NgayDat.ToString("dd/MM/yyyy")</td><td>@item.SanBong?.TenSan</td><td>@item.TrangThai</td><td>@item.TienCoc.ToString("N0")</td></tr>
+        }
+        </tbody>
+    </table>
+    <a class="btn btn-outline-secondary" asp-action="Index">Quay lai</a>
+</div>

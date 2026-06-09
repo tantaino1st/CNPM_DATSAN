@@ -1,0 +1,135 @@
+@model QUANLYSANBONG.Models.BlogIndexViewModel
+@{
+    ViewData["Title"] = "Kiến thức quản lý sân thể thao - SanBong.vn Blog";
+}
+
+<link rel="stylesheet" href="~/css/blog.css" asp-append-version="true" />
+
+<section class="blog-hero">
+    <div class="container">
+        <span class="badge">Blog SanBong.vn</span>
+        <h1>Kiến Thức Quản Lý Sân Thể Thao</h1>
+        <p>Tổng hợp kiến thức, hướng dẫn, kinh nghiệm kinh doanh sân bóng đá, pickleball, cầu lông, tennis. Dành cho chủ sân và người chơi.</p>
+        
+        <div class="search-wrapper">
+            <form asp-action="Index" method="get">
+                <input type="text" name="keyword" value="@Model.Keyword" placeholder="Tìm bài viết theo từ khóa...">
+                <button type="submit" class="btn btn-success"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<div class="container my-5" style="max-width: 1100px;">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <div class="row g-4">
+                @foreach (var post in Model.BaiViet)
+                {
+                    <div class="col-md-6">
+                        <div class="blog-card">
+                            <div class="blog-card-img">
+                                <a asp-action="Details" asp-route-id="@post.Id">
+                                    <img src="@(string.IsNullOrEmpty(post.AnhDaiDien) ? "/images/default-blog.jpg" : post.AnhDaiDien)" alt="@post.TieuDe">
+                                </a>
+                                <span class="category-badge">@post.Category?.TenDanhMuc</span>
+                            </div>
+                            <div class="blog-card-body">
+                                <div class="post-meta">
+                                    <i class="far fa-calendar-alt me-1"></i> @post.NgayDang.ToString("dd/MM/yyyy") 
+                                    <span class="mx-2">|</span> 
+                                    <i class="far fa-clock me-1"></i> @post.ThoiGianDoc
+                                </div>
+                                <h4 class="post-title">
+                                    <a asp-action="Details" asp-route-id="@post.Id">@post.TieuDe</a>
+                                </h4>
+                                <p class="post-excerpt">@post.MoTaNgan</p>
+                                <a asp-action="Details" asp-route-id="@post.Id" class="read-more">Đọc tiếp →</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (!Model.BaiViet.Any())
+                {
+                    <div class="col-12 text-center py-5">
+                        <img src="/images/no-results.png" alt="No results" style="width: 200px; opacity: 0.5;">
+                        <p class="mt-3 text-muted">Không tìm thấy bài viết nào phù hợp.</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Pagination -->
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="mt-5">
+                    <ul class="pagination pagination-custom justify-content-center">
+                        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { keyword = Model.Keyword, categoryId = Model.CategoryId, page = Model.CurrentPage - 1 })">&laquo;</a>
+                        </li>
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { keyword = Model.Keyword, categoryId = Model.CategoryId, page = i })">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { keyword = Model.Keyword, categoryId = Model.CategoryId, page = Model.CurrentPage + 1 })">&raquo;</a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Categories -->
+            <div class="sidebar-card">
+                <h5 class="sidebar-title">Chuyên mục</h5>
+                <ul class="category-list">
+                    <li class="@(Model.CategoryId == null ? "active" : "")">
+                        <a href="@Url.Action("Index", new { keyword = Model.Keyword })">
+                            <span>Tất cả</span>
+                            <span class="badge bg-light text-dark">@Model.BaiViet.Count</span>
+                        </a>
+                    </li>
+                    @foreach (var cat in Model.DanhMuc)
+                    {
+                        <li class="@(Model.CategoryId == cat.Id ? "active" : "")">
+                            <a href="@Url.Action("Index", new { keyword = Model.Keyword, categoryId = cat.Id })">
+                                <span>@cat.TenDanhMuc</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            <!-- Popular Posts -->
+            <div class="sidebar-card">
+                <h5 class="sidebar-title">Bài nổi bật nhất</h5>
+                @foreach (var p in Model.BaiVietNoiBat)
+                {
+                    <div class="popular-post-item">
+                        <a asp-action="Details" asp-route-id="@p.Id">
+                            <img src="@(string.IsNullOrEmpty(p.AnhDaiDien) ? "/images/default-blog.jpg" : p.AnhDaiDien)" alt="@p.TieuDe" class="popular-post-img">
+                        </a>
+                        <div>
+                            <h6 class="popular-post-title">
+                                <a asp-action="Details" asp-route-id="@p.Id" class="text-dark text-decoration-none">@p.TieuDe</a>
+                            </h6>
+                            <div class="small text-muted">@p.NgayDang.ToString("dd/MM/yyyy")</div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- CTA -->
+            <div class="sidebar-card cta-card text-center">
+                <h5 class="fw-bold mb-3">Trở thành Chủ Sân</h5>
+                <p class="small opacity-90 mb-4">Đăng ký dùng thử miễn phí 30 ngày phần mềm quản lý sân thể thao SanBong.vn</p>
+                <a href="#" class="btn btn-light py-2">Dùng thử ngay</a>
+            </div>
+        </div>
+    </div>
+</div>

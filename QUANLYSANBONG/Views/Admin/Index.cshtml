@@ -1,0 +1,168 @@
+@model IEnumerable<QUANLYSANBONG.Models.DatSan>
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row mb-4">
+    <!-- Card Doanh thu -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-stat border-left-success h-100 py-2 bg-success text-white">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">
+                            Doanh thu hôm nay
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold">
+                            @string.Format("{0:N0}", ViewBag.DoanhThuHomNay) VNĐ
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fa-solid fa-dollar-sign fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Lượt đặt -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-stat border-left-primary h-100 py-2 bg-primary text-white">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">
+                            Lượt đặt hôm nay
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold">
+                            @ViewBag.LuotDatHomNay lượt
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fa-solid fa-calendar-check fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Tổng sân -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-stat border-left-info h-100 py-2 bg-info text-white">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">
+                            Tỷ lệ lấp đầy hôm nay
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold">
+                            @(ViewBag.TongSan > 0 ? (ViewBag.SanDaDatHomNay * 100 / ViewBag.TongSan) : 0)%
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fa-solid fa-percent fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Sân hoạt động -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-stat border-left-warning h-100 py-2 bg-warning text-dark">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">
+                            Sân đang hoạt động
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold">
+                            @ViewBag.SanDangHoatDong / @ViewBag.TongSan
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fa-solid fa-futbol fa-2x text-dark-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Danh sách đặt sân gần đây</h6>
+                <a asp-controller="DatSan" asp-action="Index" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Khách hàng</th>
+                                <th>Sân</th>
+                                <th>Ngày đặt</th>
+                                <th>Khung giờ</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@(item.KhachHang?.HoTen ?? "Khách lẻ")</strong>
+                                            <br />
+                                            <small class="text-muted">@(item.KhachHang?.SoDienThoai ?? "")</small>
+                                        </td>
+                                        <td>@(item.SanBong?.TenSan)</td>
+                                        <td>@item.NgayDat.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            @if (item.BangGiaKhungGio != null)
+                                            {
+                                                <span>@item.BangGiaKhungGio.GioBatDau.ToString(@"hh\:mm") - @item.BangGiaKhungGio.GioKetThuc.ToString(@"hh\:mm")</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@item.GioBatDau.ToString(@"hh\:mm") - @item.GioKetThuc.ToString(@"hh\:mm")</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (item.TrangThai == "Cho xac nhan")
+                                            {
+                                                <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                            }
+                                            else if (item.TrangThai == "Da xac nhan")
+                                            {
+                                                <span class="badge bg-primary">Đã xác nhận</span>
+                                            }
+                                            else if (item.TrangThai == "Da hoan thanh")
+                                            {
+                                                <span class="badge bg-success">Đã hoàn thành</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Đã hủy</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center">Chưa có dữ liệu</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

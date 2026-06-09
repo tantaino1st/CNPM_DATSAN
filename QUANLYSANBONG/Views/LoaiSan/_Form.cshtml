@@ -1,0 +1,22 @@
+@model QUANLYSANBONG.Models.LoaiSan
+
+<div class="mb-3">
+    <label asp-for="TenLoaiSan" class="form-label">Tên loại sân <span class="text-danger">*</span></label>
+    <input asp-for="TenLoaiSan" class="form-control" placeholder="Ví dụ: Sân 5, Sân 7..." />
+    <span asp-validation-for="TenLoaiSan" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="MoTa" class="form-label">Mô tả</label>
+    <textarea asp-for="MoTa" class="form-control" rows="3" placeholder="Nhập mô tả chi tiết..."></textarea>
+    <span asp-validation-for="MoTa" class="text-danger"></span>
+</div>
+
+<div class="mt-4">
+    <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-save"></i> Lưu dữ liệu
+    </button>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại
+    </a>
+</div>

@@ -1,0 +1,44 @@
+@model QUANLYSANBONG.Models.NhanVien
+
+<div class="mb-3">
+    <label asp-for="HoTen" class="form-label">Họ tên nhân viên <span class="text-danger">*</span></label>
+    <input asp-for="HoTen" class="form-control" />
+    <span asp-validation-for="HoTen" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="ChucVu" class="form-label">Chức vụ <span class="text-danger">*</span></label>
+    <input asp-for="ChucVu" class="form-control" placeholder="Ví dụ: Nhân viên, Quản lý..." />
+    <span asp-validation-for="ChucVu" class="text-danger"></span>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="SoDienThoai" class="form-label">Số điện thoại</label>
+        <input asp-for="SoDienThoai" class="form-control" />
+        <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label asp-for="Email" class="form-label">Email</label>
+        <input asp-for="Email" type="email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="MaNguoiDung" class="form-label">Gắn với Tài Khoản</label>
+    <select asp-for="MaNguoiDung" class="form-select" asp-items="ViewBag.MaNguoiDung">
+        <option value="">-- Không gắn tài khoản --</option>
+    </select>
+    <span asp-validation-for="MaNguoiDung" class="text-danger"></span>
+</div>
+
+<div class="mt-4">
+    <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-save"></i> Lưu dữ liệu
+    </button>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại
+    </a>
+</div>

@@ -1,0 +1,157 @@
+@{
+    ViewData["Title"] = "Báo Cáo Thống Kê";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Tùy chọn Báo Cáo</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Index" method="get">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label text-muted">Từ ngày</label>
+                    <input type="date" name="fromDate" value="@ViewData["FromDate"]" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-muted">Đến ngày</label>
+                    <input type="date" name="toDate" value="@ViewData["ToDate"]" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-filter"></i> Xem Báo Cáo</button>
+                    <button type="button" onclick="window.print()" class="btn btn-secondary ms-2"><i class="fa-solid fa-print"></i> In</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tổng quan báo cáo -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-stat border-left-success h-100 py-2 bg-success text-white">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Tổng Doanh Thu</div>
+                        <div class="h5 mb-0 font-weight-bold">@string.Format("{0:N0}", ViewBag.TongDoanhThu) đ</div>
+                    </div>
+                    <div class="col-auto"><i class="fa-solid fa-sack-dollar fa-2x text-white-50"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-stat border-left-info h-100 py-2 bg-info text-white">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Tiền Thuê Sân</div>
+                        <div class="h5 mb-0 font-weight-bold">@string.Format("{0:N0}", ViewBag.TongTienSan) đ</div>
+                    </div>
+                    <div class="col-auto"><i class="fa-solid fa-futbol fa-2x text-white-50"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-stat border-left-warning h-100 py-2 bg-warning text-dark">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Tiền Dịch Vụ</div>
+                        <div class="h5 mb-0 font-weight-bold">@string.Format("{0:N0}", ViewBag.TongTienDichVu) đ</div>
+                    </div>
+                    <div class="col-auto"><i class="fa-solid fa-burger fa-2x text-dark-50"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-stat border-left-primary h-100 py-2 bg-primary text-white">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Số Lượng Hóa Đơn</div>
+                        <div class="h5 mb-0 font-weight-bold">@ViewBag.TongHoaDon</div>
+                    </div>
+                    <div class="col-auto"><i class="fa-solid fa-file-invoice fa-2x text-white-50"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Bảng Thống Kê Theo Ngày -->
+    <div class="col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Doanh Thu Theo Ngày</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ngày</th>
+                                <th class="text-end">Doanh Thu (VNĐ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.DoanhThuTheoNgay != null)
+                            {
+                                foreach (var item in ViewBag.DoanhThuTheoNgay)
+                                {
+                                    <tr>
+                                        <td>@item.Ngay.ToString("dd/MM/yyyy")</td>
+                                        <td class="text-end fw-bold text-primary">@string.Format("{0:N0}", item.DoanhThu)</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng Thống Kê Sân Bóng -->
+    <div class="col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Lượt Đặt Theo Sân</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tên Sân</th>
+                                <th class="text-center">Số Lượt Đặt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.LuotDatTheoSan != null)
+                            {
+                                foreach (var item in ViewBag.LuotDatTheoSan)
+                                {
+                                    <tr>
+                                        <td><strong>@item.TenSan</strong></td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary rounded-pill">@item.LuotDat</span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

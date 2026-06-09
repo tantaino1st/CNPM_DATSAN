@@ -1,0 +1,25 @@
+@model IEnumerable<QUANLYSANBONG.Models.NhatKyThaoTac>
+@{
+    Layout = "_AdminLayout";
+}
+
+<div class="page-card p-4">
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-md-10"><input class="form-control" name="search" placeholder="Tim hanh dong, noi dung, nguoi dung" /></div>
+        <div class="col-md-2"><button class="btn btn-outline-secondary w-100">Tim</button></div>
+    </form>
+    <table class="table table-hover">
+        <thead class="table-light"><tr><th>Thoi gian</th><th>Nguoi dung</th><th>Hanh dong</th><th>Noi dung</th></tr></thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ThoiGian.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                <td>@item.NguoiDung?.TenDangNhap</td>
+                <td>@item.HanhDong</td>
+                <td>@item.NoiDung</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

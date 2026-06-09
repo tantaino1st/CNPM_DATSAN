@@ -1,0 +1,100 @@
+@model QUANLYSANBONG.Models.DatSan
+@{
+    ViewData["Title"] = "Chi Tiết Đặt Sân";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Thông tin lịch đặt sân #@Model.MaDatSan</h6>
+                <div>
+                    <a asp-action="Edit" asp-route-id="@Model.MaDatSan" class="btn btn-sm btn-warning">
+                        <i class="fa-solid fa-pen-to-square"></i> Sửa
+                    </a>
+                    @if (Model.TrangThai == "Da xac nhan" || Model.TrangThai == "Da hoan thanh")
+                    {
+                        <a asp-controller="HoaDon" asp-action="Create" asp-route-maDatSan="@Model.MaDatSan" class="btn btn-sm btn-success">
+                            <i class="fa-solid fa-file-invoice-dollar"></i> Lập hóa đơn
+                        </a>
+                    }
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td width="30%" class="text-muted fw-bold">Khách hàng:</td>
+                            <td>@(Model.KhachHang?.HoTen ?? "Khách vãng lai")</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-bold">Số điện thoại:</td>
+                            <td>@(Model.KhachHang?.SoDienThoai ?? "-")</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-bold">Sân bóng:</td>
+                            <td><span class="badge bg-info text-dark fs-6">@Model.SanBong?.TenSan</span></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-bold">Ngày đặt:</td>
+                            <td><strong>@Model.NgayDat.ToString("dd/MM/yyyy")</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-bold">Khung giờ:</td>
+                            <td>
+                                @if (Model.BangGiaKhungGio != null)
+                                {
+                                    <span class="badge border border-secondary text-dark fs-6">
+                                        <i class="fa-regular fa-clock"></i> @Model.BangGiaKhungGio.GioBatDau.ToString(@"hh\:mm") - @Model.BangGiaKhungGio.GioKetThuc.ToString(@"hh\:mm")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge border border-secondary text-dark fs-6">
+                                        <i class="fa-regular fa-clock"></i> @Model.GioBatDau.ToString(@"hh\:mm") - @Model.GioKetThuc.ToString(@"hh\:mm")
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-bold">Tiền cọc:</td>
+                            <td class="text-danger fw-bold">@string.Format("{0:N0}", Model.TienCoc) đ</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-bold">Trạng thái:</td>
+                            <td>
+                                @if (Model.TrangThai == "Cho xac nhan")
+                                {
+                                    <span class="badge bg-warning text-dark"><i class="fa-regular fa-hourglass-half"></i> Chờ xác nhận</span>
+                                }
+                                else if (Model.TrangThai == "Da xac nhan")
+                                {
+                                    <span class="badge bg-primary"><i class="fa-solid fa-check"></i> Đã xác nhận</span>
+                                }
+                                else if (Model.TrangThai == "Da hoan thanh")
+                                {
+                                    <span class="badge bg-success"><i class="fa-solid fa-check-double"></i> Đã hoàn thành</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger"><i class="fa-solid fa-xmark"></i> Đã hủy</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-bold">Ghi chú:</td>
+                            <td>@Model.GhiChu</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-4 pt-3 border-top">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left"></i> Quay lại danh sách
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

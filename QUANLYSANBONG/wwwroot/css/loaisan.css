@@ -1,0 +1,174 @@
+/* Category Hero Section */
+.category-hero {
+    background: linear-gradient(135deg, #1a365d 0%, #2563eb 50%, #22c55e 100%);
+    padding: 60px 0;
+    color: #fff;
+    text-align: center;
+}
+
+.category-hero h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.category-hero p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto 30px;
+}
+
+/* Filter Bar Pill Style */
+.filter-pill-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 10px;
+    border-radius: 50px;
+    display: flex;
+    gap: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.filter-pill-wrapper input, .filter-pill-wrapper select {
+    border: none;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+}
+
+.filter-pill-wrapper select {
+    border-left: 1px solid #e2e8f0;
+    border-radius: 0;
+}
+
+.filter-pill-wrapper .btn-search {
+    background: #22c55e;
+    color: #fff;
+    border-radius: 50px;
+    padding: 0 30px;
+    font-weight: 700;
+}
+
+/* Pitch Horizontal Cards */
+.pitch-horizontal-card {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 24px;
+    display: flex;
+}
+
+.pitch-horizontal-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-side {
+    width: 280px;
+    min-width: 280px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-content-side {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.pitch-meta {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.pitch-title-link {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    text-decoration: none;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.pitch-price-tag {
+    font-size: 1.1rem;
+    color: #2563eb;
+    font-weight: 700;
+}
+
+.pitch-price-tag span {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 400;
+}
+
+.rating-stars {
+    color: #fbbf24;
+}
+
+.pitch-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+/* Sidebar Styling */
+.sidebar-card-custom {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 30px;
+}
+
+.sidebar-title-custom {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #22c55e;
+    width: fit-content;
+}
+
+.cat-link {
+    display: block;
+    padding: 10px 15px;
+    color: #475569;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.cat-link:hover {
+    background: #f1f5f9;
+    color: #2563eb;
+}
+
+.cat-link.active {
+    background: #eff6ff;
+    color: #2563eb;
+    font-weight: 600;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+    .pitch-horizontal-card {
+        flex-direction: column;
+    }
+    .card-img-side {
+        width: 100%;
+    }
+    .filter-pill-wrapper {
+        flex-direction: column;
+        border-radius: 15px;
+    }
+    .filter-pill-wrapper select {
+        border-left: none;
+        border-top: 1px solid #e2e8f0;
+    }
+}

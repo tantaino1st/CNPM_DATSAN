@@ -1,0 +1,34 @@
+@model QUANLYSANBONG.Models.DichVu
+
+<div class="mb-3">
+    <label asp-for="TenDichVu" class="form-label">Tên dịch vụ <span class="text-danger">*</span></label>
+    <input asp-for="TenDichVu" class="form-control" placeholder="Ví dụ: Nước suối, Thuê áo..." />
+    <span asp-validation-for="TenDichVu" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="DonViTinh" class="form-label">Đơn vị tính <span class="text-danger">*</span></label>
+    <input asp-for="DonViTinh" class="form-control" placeholder="Ví dụ: Chai, Lốc, Bộ..." />
+    <span asp-validation-for="DonViTinh" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="DonGia" class="form-label">Đơn giá (VNĐ) <span class="text-danger">*</span></label>
+    <input asp-for="DonGia" type="number" class="form-control" />
+    <span asp-validation-for="DonGia" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="TonKho" class="form-label">Số lượng tồn kho <span class="text-danger">*</span></label>
+    <input asp-for="TonKho" type="number" class="form-control" />
+    <span asp-validation-for="TonKho" class="text-danger"></span>
+</div>
+
+<div class="mt-4">
+    <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-save"></i> Lưu dữ liệu
+    </button>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại
+    </a>
+</div>

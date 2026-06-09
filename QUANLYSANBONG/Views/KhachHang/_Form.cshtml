@@ -1,0 +1,38 @@
+@model QUANLYSANBONG.Models.KhachHang
+
+<div class="mb-3">
+    <label asp-for="HoTen" class="form-label">Họ tên <span class="text-danger">*</span></label>
+    <input asp-for="HoTen" class="form-control" placeholder="Nhập họ tên khách hàng" />
+    <span asp-validation-for="HoTen" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="SoDienThoai" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+    <input asp-for="SoDienThoai" class="form-control" placeholder="Nhập số điện thoại liên hệ" />
+    <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="NhomKhach" class="form-label">Nhóm khách <span class="text-danger">*</span></label>
+    <select asp-for="NhomKhach" class="form-select">
+        <option value="Khach moi">Khách mới</option>
+        <option value="Khach quen">Khách quen</option>
+        <option value="Khach VIP">Khách VIP</option>
+    </select>
+    <span asp-validation-for="NhomKhach" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="GhiChu" class="form-label">Ghi chú</label>
+    <textarea asp-for="GhiChu" class="form-control" rows="3" placeholder="Ghi chú thêm..."></textarea>
+    <span asp-validation-for="GhiChu" class="text-danger"></span>
+</div>
+
+<div class="mt-4">
+    <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-save"></i> Lưu dữ liệu
+    </button>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại
+    </a>
+</div>

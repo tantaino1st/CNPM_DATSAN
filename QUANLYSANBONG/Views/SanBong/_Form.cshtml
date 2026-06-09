@@ -1,0 +1,40 @@
+@model QUANLYSANBONG.Models.SanBong
+
+<div class="mb-3">
+    <label asp-for="TenSan" class="form-label">Tên Sân Bóng <span class="text-danger">*</span></label>
+    <input asp-for="TenSan" class="form-control" placeholder="Ví dụ: Sân A1" />
+    <span asp-validation-for="TenSan" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="MaLoaiSan" class="form-label">Loại Sân <span class="text-danger">*</span></label>
+    <select asp-for="MaLoaiSan" class="form-select" asp-items="ViewBag.MaLoaiSan">
+        <option value="">-- Chọn Loại Sân --</option>
+    </select>
+    <span asp-validation-for="MaLoaiSan" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="GiaMacDinh" class="form-label">Giá mặc định (VNĐ/giờ) <span class="text-danger">*</span></label>
+    <input asp-for="GiaMacDinh" type="number" class="form-control" />
+    <span asp-validation-for="GiaMacDinh" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="TrangThai" class="form-label">Trạng thái <span class="text-danger">*</span></label>
+    <select asp-for="TrangThai" class="form-select">
+        <option value="Hoat dong">Hoạt động</option>
+        <option value="Bao tri">Bảo trì</option>
+        <option value="Ngung hoat dong">Ngưng hoạt động</option>
+    </select>
+    <span asp-validation-for="TrangThai" class="text-danger"></span>
+</div>
+
+<div class="mt-4">
+    <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-save"></i> Lưu dữ liệu
+    </button>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại
+    </a>
+</div>

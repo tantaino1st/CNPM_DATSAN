@@ -1,0 +1,260 @@
+@model QUANLYSANBONG.Models.DatLichViewModel
+@{
+    ViewData["Title"] = "Lịch đặt sân";
+    Layout = "_AdminLayout";
+    
+    // Mảng nhãn thứ chuẩn Tiếng Việt để tránh lỗi font
+    var daysLabels = new[] { "CN", "T2", "T3", "T4", "T5", "T6", "T7" };
+    var today = DateTime.Today;
+    
+    // Tính ngày bắt đầu tuần (Thứ 2)
+    int diff = (7 + (Model.NgayHienTai.Date.DayOfWeek - DayOfWeek.Monday)) % 7;
+    var startOfWeek = Model.NgayHienTai.Date.AddDays(-1 * diff);
+    
+    var hourNow = DateTime.Now.Hour;
+}
+
+<link rel="stylesheet" href="~/css/dat-lich.css" asp-append-version="true" />
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-1 text-dark">Lịch đặt sân</h3>
+        <p class="text-muted small mb-0">
+            <i class="far fa-calendar-alt me-1"></i> @Model.NgayHienTai.ToString("dddd, dd/MM/yyyy", new System.Globalization.CultureInfo("vi-VN")) 
+            • <span class="fw-bold">@Model.DanhSachSanHienThi.Count sân đang xem</span>
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-white border shadow-xs" onclick="location.reload()" title="Tải lại">
+            <i class="fas fa-sync-alt text-primary"></i>
+        </button>
+        <button class="btn btn-primary px-4 shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#quickBookingModal">
+            <i class="fas fa-bolt me-2"></i>Đặt nhanh
+        </button>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="d-flex flex-wrap gap-3 mb-4">
+    <div class="stat-pill">
+        <i class="fas fa-calendar-check text-danger"></i>
+        <span>@Model.SoDaDat đã đặt</span>
+    </div>
+    <div class="stat-pill">
+        <i class="fas fa-door-open text-success"></i>
+        <span>@Model.SoTrong trống</span>
+    </div>
+    <div class="stat-pill">
+        <i class="fas fa-running text-info"></i>
+        <span>@Model.SoDangChoi đang chơi</span>
+    </div>
+    <div class="stat-pill flex-grow-1" style="max-width: 280px;">
+        <span class="me-2 text-muted small">Lấp đầy @Model.TiLeLapDay%</span>
+        <div class="progress flex-grow-1" style="height: 6px; background: #e2e8f0;">
+            <div class="progress-bar bg-primary" style="width: @Model.TiLeLapDay%"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Week Picker Card -->
+<div class="week-container mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-2">
+            <a id="btnPrevWeek" href="?ngay=@Model.NgayHienTai.AddDays(-7).ToString("yyyy-MM-dd")&maSan=@Model.SelectedMaSan" class="btn btn-light btn-sm rounded-circle"><i class="fas fa-chevron-left"></i></a>
+            <a href="?ngay=@DateTime.Today.ToString("yyyy-MM-dd")&maSan=@Model.SelectedMaSan" class="btn btn-outline-primary btn-sm px-3 rounded-pill fw-bold">Hôm nay</a>
+            <a id="btnNextWeek" href="?ngay=@Model.NgayHienTai.AddDays(7).ToString("yyyy-MM-dd")&maSan=@Model.SelectedMaSan" class="btn btn-light btn-sm rounded-circle"><i class="fas fa-chevron-right"></i></a>
+            <span class="fw-bold ms-2 text-dark">Tháng @Model.NgayHienTai.ToString("MM/yyyy")</span>
+        </div>
+        
+        <div class="d-flex gap-4 d-none d-md-flex">
+            <div class="legend-item d-flex align-items-center gap-2 small fw-medium">
+                <div class="legend-dot" style="background: var(--status-empty); border: 1px dashed #86efac;"></div> Trống
+            </div>
+            <div class="legend-item d-flex align-items-center gap-2 small fw-medium">
+                <div class="legend-dot" style="background: var(--status-booked);"></div> Đã đặt
+            </div>
+            <div class="legend-item d-flex align-items-center gap-2 small fw-medium">
+                <div class="legend-dot" style="background: var(--status-playing);"></div> Đang chơi
+            </div>
+        </div>
+    </div>
+
+    <div class="week-days-grid mb-4">
+        @for (int i = 0; i < 7; i++)
+        {
+            var date = startOfWeek.AddDays(i);
+            var isActive = date.Date == Model.NgayHienTai.Date;
+            var isToday = date.Date == DateTime.Today;
+            
+            <a href="?ngay=@date.ToString("yyyy-MM-dd")&maSan=@Model.SelectedMaSan" class="day-card @(isActive ? "active" : "")">
+                <span class="day-label">@daysLabels[(int)date.DayOfWeek]</span>
+                <span class="day-number">@date.Day.ToString("00")</span>
+                @if (isToday) { <div class="today-dot"></div> }
+            </a>
+        }
+    </div>
+
+    <!-- Field Filter -->
+    <form method="get" class="filter-section">
+        <input type="hidden" name="ngay" value="@Model.NgayHienTai.ToString("yyyy-MM-dd")" />
+        <label class="fw-bold text-muted small text-uppercase">Chọn sân:</label>
+        <select name="maSan" id="maSanFilter" class="form-select form-select-sm border-0 bg-light fw-bold" style="width: auto; min-width: 220px; cursor: pointer;">
+            <option value="0">Tất cả sân (Tối đa 4)</option>
+            @foreach (var s in Model.DanhSachTatCaSan)
+            {
+                <option value="@s.MaSan" selected="@(Model.SelectedMaSan == s.MaSan)">
+                    @s.TenSan
+                </option>
+            }
+        </select>
+        <span class="text-muted small ms-auto d-none d-md-block">
+            <i class="fas fa-info-circle me-1"></i> Dùng phím <kbd class="bg-white text-dark border">←</kbd> <kbd class="bg-white text-dark border">→</kbd> để đổi ngày
+        </span>
+    </form>
+</div>
+
+<!-- Timeline Grid -->
+<div class="timeline-container">
+    <div class="table-responsive">
+        <div class="timeline-grid" style="grid-template-columns: 80px repeat(@Model.DanhSachSanHienThi.Count, 1fr);">
+            <!-- Cột Giờ -->
+            <div class="time-col">
+                <div class="cell-header" style="background: transparent;">GIỜ</div>
+                @for (int h = Model.GioBatDauHeThong; h <= Model.GioKetThucHeThong; h++)
+                {
+                    <div class="time-cell @(h == hourNow && Model.NgayHienTai.Date == DateTime.Today ? "active-hour" : "")">
+                        @h.ToString("00"):00
+                    </div>
+                }
+            </div>
+
+            <!-- Các cột Sân -->
+            @foreach (var san in Model.DanhSachSanHienThi)
+            {
+                <div class="field-col">
+                    <div class="cell-header px-2" title="@san.TenSan">
+                        @if (san.LoaiSan?.TenLoaiSan == "Bóng đá") { <i class="fas fa-futbol me-2 text-success"></i> }
+                        else { <i class="fas fa-map-marker-alt me-2 text-primary"></i> }
+                        <span class="field-name">@san.TenSan</span>
+                    </div>
+                    
+                    @for (int h = Model.GioBatDauHeThong; h <= Model.GioKetThucHeThong; h++)
+                    {
+                        var time = new TimeSpan(h, 0, 0);
+                        var booking = Model.DanhSachDatSan.FirstOrDefault(x => x.MaSan == san.MaSan && time >= x.GioBatDau && time < x.GioKetThuc);
+                        
+                        // Kiểm tra giờ hoạt động
+                        var thuHienTaiStr = Model.NgayHienTai.ToString("dddd", new System.Globalization.CultureInfo("vi-VN"));
+                        var thuMap = new Dictionary<string, string> { 
+                            {"Thứ Hai", "Thứ 2"}, {"Thứ Ba", "Thứ 3"}, {"Thứ Tư", "Thứ 4"}, 
+                            {"Thứ Năm", "Thứ 5"}, {"Thứ Sáu", "Thứ 6"}, {"Thứ Bảy", "Thứ 7"}, {"Chủ Nhật", "Chủ Nhật"} 
+                        };
+                        var thuChuan = thuMap.ContainsKey(thuHienTaiStr) ? thuMap[thuHienTaiStr] : thuHienTaiStr;
+                        var gioHD = Model.GioHoatDongs.FirstOrDefault(x => x.Thu == thuChuan);
+                        bool isClosed = gioHD != null && (!gioHD.DangHoatDong || time < gioHD.GioMoCua || time >= gioHD.GioDongCua);
+
+                        if (isClosed)
+                        {
+                            <div class="booking-cell closed" title="Sân đóng cửa"><i class="fas fa-lock"></i></div>
+                        }
+                        else if (booking != null)
+                        {
+                            var statusClass = "booked";
+                            var statusIcon = "fa-user";
+                            
+                            if (booking.TrangThai == "Da xac nhan" && DateTime.Now.Date == Model.NgayHienTai.Date && DateTime.Now.TimeOfDay >= booking.GioBatDau && DateTime.Now.TimeOfDay < booking.GioKetThuc)
+                            {
+                                statusClass = "playing";
+                                statusIcon = "fa-running";
+                            }
+                            else if (booking.TrangThai == "Co dinh")
+                            {
+                                statusClass = "fixed";
+                                statusIcon = "fa-anchor";
+                            }
+
+                            <div class="booking-cell @statusClass" onclick="openBookingDetails(@booking.MaDatSan)">
+                                <i class="fas @statusIcon"></i>
+                                <span class="fw-bold text-truncate">@booking.KhachHang?.HoTen</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="booking-cell empty" onclick="openQuickBooking(@san.MaSan, @h)" title="Trống - Click để đặt">
+                                <i class="fas fa-plus fa-xs"></i>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal Đặt nhanh -->
+<div class="modal fade" id="quickBookingModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white border-0">
+                <h5 class="modal-title fw-bold"><i class="fas fa-bolt me-2"></i> Đặt lịch nhanh</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="TaoNhanh" method="post">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Khách hàng *</label>
+                            <input type="text" name="HoTen" class="form-control shadow-xs" placeholder="Tên khách hàng" required />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Số điện thoại *</label>
+                            <input type="text" name="SoDienThoai" class="form-control shadow-xs" placeholder="09xxxxxxxx" required />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Chọn sân *</label>
+                            <select name="MaSan" id="modalMaSan" class="form-select shadow-xs" required>
+                                @foreach (var s in Model.DanhSachTatCaSan)
+                                {
+                                    <option value="@s.MaSan">@s.TenSan</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ngày đặt</label>
+                            <input type="date" name="NgayDat" class="form-control shadow-xs" value="@Model.NgayHienTai.ToString("yyyy-MM-dd")" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Trạng thái</label>
+                            <select name="TrangThai" class="form-select shadow-xs">
+                                <option value="Da dat">Đã đặt</option>
+                                <option value="Da xac nhan">Đang chơi</option>
+                                <option value="Co dinh">Cố định</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Giờ bắt đầu</label>
+                            <input type="time" name="GioBatDau" id="modalGioBatDau" class="form-control shadow-xs" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Giờ kết thúc</label>
+                            <input type="time" name="GioKetThuc" id="modalGioKetThuc" class="form-control shadow-xs" required />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Ghi chú</label>
+                            <textarea name="GhiChu" class="form-control shadow-xs" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary px-4 shadow-sm fw-bold">Lưu đặt lịch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/dat-lich.js" asp-append-version="true"></script>
+}

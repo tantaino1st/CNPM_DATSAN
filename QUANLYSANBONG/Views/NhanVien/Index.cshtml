@@ -1,0 +1,67 @@
+@model IEnumerable<QUANLYSANBONG.Models.NhanVien>
+@{
+    ViewData["Title"] = "Quản lý Nhân Viên";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Danh sách Nhân Viên</h6>
+        <a asp-action="Create" class="btn btn-sm btn-primary">
+            <i class="fa-solid fa-plus"></i> Thêm nhân viên
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th width="50">ID</th>
+                        <th>Họ tên</th>
+                        <th>Chức vụ</th>
+                        <th>Số điện thoại</th>
+                        <th>Email</th>
+                        <th>Tài khoản</th>
+                        <th width="120" class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.MaNV</td>
+                                <td><strong>@item.HoTen</strong></td>
+                                <td>@item.ChucVu</td>
+                                <td>@item.SoDienThoai</td>
+                                <td>@item.Email</td>
+                                <td>
+                                    @if (item.NguoiDung != null)
+                                    {
+                                        <span class="badge bg-secondary">@item.NguoiDung.TenDangNhap</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">Chưa cấp</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="Edit" asp-route-id="@item.MaNV" class="btn btn-sm btn-warning" title="Sửa">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center">Không có dữ liệu</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

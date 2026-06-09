@@ -1,0 +1,45 @@
+@model QUANLYSANBONG.Models.BangGiaKhungGio
+
+<div class="mb-3">
+    <label asp-for="NgayTrongTuan" class="form-label">Ngày trong tuần <span class="text-danger">*</span></label>
+    <select asp-for="NgayTrongTuan" class="form-select">
+        <option value="Thứ 2 - Thứ 6">Thứ 2 - Thứ 6</option>
+        <option value="Thứ 7 - Chủ nhật">Thứ 7 - Chủ nhật</option>
+        <option value="Lễ, Tết">Lễ, Tết</option>
+    </select>
+    <span asp-validation-for="NgayTrongTuan" class="text-danger"></span>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="GioBatDau" class="form-label">Giờ bắt đầu <span class="text-danger">*</span></label>
+        <input asp-for="GioBatDau" type="time" class="form-control" />
+        <span asp-validation-for="GioBatDau" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="GioKetThuc" class="form-label">Giờ kết thúc <span class="text-danger">*</span></label>
+        <input asp-for="GioKetThuc" type="time" class="form-control" />
+        <span asp-validation-for="GioKetThuc" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="DonGia" class="form-label">Đơn giá (VNĐ) <span class="text-danger">*</span></label>
+    <input asp-for="DonGia" type="number" class="form-control" />
+    <span asp-validation-for="DonGia" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="PhuThuCaoDiem" class="form-label">Phụ thu cao điểm (VNĐ) <span class="text-danger">*</span></label>
+    <input asp-for="PhuThuCaoDiem" type="number" class="form-control" />
+    <span asp-validation-for="PhuThuCaoDiem" class="text-danger"></span>
+</div>
+
+<div class="mt-4">
+    <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-save"></i> Lưu dữ liệu
+    </button>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại
+    </a>
+</div>

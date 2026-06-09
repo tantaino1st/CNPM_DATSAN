@@ -1,0 +1,153 @@
+@model QUANLYSANBONG.Models.LoaiSanViewModel
+@{
+    ViewData["Title"] = Model.TenLoaiSan;
+    var icon = "fa-futbol";
+    if (Model.TenLoaiSan == "Cầu lông") icon = "fa-table-tennis-paddle-ball";
+    else if (Model.TenLoaiSan == "Pickleball") icon = "fa-medal";
+    else if (Model.TenLoaiSan == "Tennis" || Model.TenLoaiSan == "Quần vợt") icon = "fa-baseball";
+    else if (Model.TenLoaiSan == "Bóng rổ") icon = "fa-basketball";
+}
+
+<link rel="stylesheet" href="~/css/loaisan.css" asp-append-version="true" />
+
+<section class="category-hero">
+    <div class="container">
+        <h1><i class="fa-solid @icon me-2 text-warning"></i> @Model.TenLoaiSan</h1>
+        <p>Tìm kiếm và đặt sân thể thao nhanh chóng, tiện lợi. Hệ thống hàng ngàn sân tập chất lượng với giá tốt nhất dành cho bạn.</p>
+        
+        <form method="get" action="@Url.Action("Index")">
+            <input type="hidden" name="loai" value="@(Model.TenLoaiSan == "Tất cả sân" ? "" : Model.TenLoaiSan)" />
+            <div class="filter-pill-wrapper">
+                <input type="text" name="keyword" value="@Model.Keyword" class="form-control" placeholder="Nhập tên sân..." style="flex: 2;">
+                <select name="quan" class="form-select" style="flex: 1;">
+                    <option value="">Tất cả quận/huyện</option>
+                    <option value="Quận 1" selected='@(Model.QuanHuyen == "Quận 1")'>Quận 1</option>
+                    <option value="Quận 7" selected='@(Model.QuanHuyen == "Quận 7")'>Quận 7</option>
+                    <option value="Thủ Đức" selected='@(Model.QuanHuyen == "Thủ Đức")'>Thủ Đức</option>
+                    <option value="Tân Bình" selected='@(Model.QuanHuyen == "Tân Bình")'>Tân Bình</option>
+                    <option value="Bình Thạnh" selected='@(Model.QuanHuyen == "Bình Thạnh")'>Bình Thạnh</option>
+                </select>
+                <button type="submit" class="btn btn-search"><i class="fas fa-search me-2"></i> TÌM KIẾM</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<div class="container my-5" style="max-width: 1200px;">
+    <div class="row">
+        <!-- List Pitches -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0">Danh sách @Model.TenLoaiSan.ToLower()</h5>
+                <span class="text-muted small">Tìm thấy @Model.DanhSachSan.Count kết quả</span>
+            </div>
+
+            @foreach (var san in Model.DanhSachSan)
+            {
+                <div class="pitch-horizontal-card">
+                    <img src="@(string.IsNullOrEmpty(san.HinhAnh) ? "https://via.placeholder.com/280x200" : san.HinhAnh)" class="card-img-side">
+                    <div class="card-content-side">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="pitch-meta"><i class="fa-solid fa-location-dot me-1 text-danger"></i> @san.DiaChi</div>
+                                <a href="/SanBong/Details/@san.MaSan" class="pitch-title-link">@san.TenSan</a>
+                            </div>
+                            <div class="rating-stars small">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <span class="badge bg-light text-dark border me-1">@san.LoaiSan?.TenLoaiSan</span>
+                            <span class="badge bg-light text-dark border me-1">@san.SoLuongSanCon sân con</span>
+                            @if (san.TrangThai == "Hoat dong") {
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">Hoạt động</span>
+                            } else {
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Bảo trì</span>
+                            }
+                        </div>
+
+                        <div class="pitch-price-tag mb-4">
+                            @san.GiaMacDinh.ToString("N0")đ<span>/giờ</span>
+                        </div>
+
+                        <div class="pitch-actions">
+                            <a href="/DatSan/CreateClient?maSan=@san.MaSan" class="btn btn-success px-4 rounded-pill fw-bold">Đặt sân ngay</a>
+                            <a href="/SanBong/Details/@san.MaSan" class="btn btn-outline-primary px-4 rounded-pill">Chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (!Model.DanhSachSan.Any())
+            {
+                <div class="text-center py-5 bg-white rounded-4 border">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6134/6134065.png" width="80" class="opacity-20 mb-3">
+                    <p class="text-muted">Không tìm thấy sân nào phù hợp với yêu cầu của bạn.</p>
+                </div>
+            }
+
+            <!-- Pagination -->
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { loai = Model.TenLoaiSan, keyword = Model.Keyword, quan = Model.QuanHuyen, page = Model.CurrentPage - 1 })"><i class="fas fa-chevron-left"></i></a>
+                        </li>
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                                <a class="page-link @(Model.CurrentPage == i ? "bg-success border-success" : "")" href="@Url.Action("Index", new { loai = Model.TenLoaiSan, keyword = Model.Keyword, quan = Model.QuanHuyen, page = i })">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { loai = Model.TenLoaiSan, keyword = Model.Keyword, quan = Model.QuanHuyen, page = Model.CurrentPage + 1 })"><i class="fas fa-chevron-right"></i></a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Categories -->
+            <div class="sidebar-card-custom">
+                <h5 class="sidebar-title-custom">Chuyên mục</h5>
+                <div class="d-flex flex-column gap-1">
+                    <a href="@Url.Action("Index")" class="cat-link @(Model.TenLoaiSan == "Tất cả sân" ? "active" : "")">Tất cả</a>
+                    @foreach (var cat in Model.DanhSachLoaiSan)
+                    {
+                        <a href="@Url.Action("Index", new { loai = cat.TenLoaiSan })" class="cat-link @(Model.TenLoaiSan == cat.TenLoaiSan ? "active" : "")">@cat.TenLoaiSan</a>
+                    }
+                </div>
+            </div>
+
+            <!-- Featured Blog Posts -->
+            <div class="sidebar-card-custom">
+                <h5 class="sidebar-title-custom">Bài viết nổi bật</h5>
+                @foreach (var post in Model.BaiVietNoiBat)
+                {
+                    <div class="d-flex gap-3 mb-3 pb-3 border-bottom last-child-no-border">
+                        <img src="@(string.IsNullOrEmpty(post.AnhDaiDien) ? "/images/default-blog.jpg" : post.AnhDaiDien)" width="70" height="50" style="object-fit: cover; border-radius: 6px;">
+                        <div>
+                            <h6 class="small fw-bold mb-1"><a href="/Blog/Details/@post.Id" class="text-dark text-decoration-none">@post.TieuDe</a></h6>
+                            <span class="text-muted" style="font-size: 0.75rem;">@post.NgayDang.ToString("dd/MM/yyyy")</span>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- CTA -->
+            <div class="sidebar-card-custom bg-success text-white">
+                <h5 class="fw-bold mb-3">Dành cho chủ sân</h5>
+                <p class="small opacity-90 mb-4">Quản lý sân chuyên nghiệp, tối ưu hóa doanh thu với phần mềm SanBong.vn</p>
+                <a href="#" class="btn btn-light w-100 fw-bold py-2 rounded-pill text-success">Dùng thử ngay</a>
+            </div>
+        </div>
+    </div>
+</div>

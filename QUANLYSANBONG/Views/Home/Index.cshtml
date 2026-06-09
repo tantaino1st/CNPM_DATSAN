@@ -1,0 +1,792 @@
+@{
+    ViewData["Title"] = "Trang chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        /* Hero Banner */
+        .hero-banner {
+            position: relative;
+            background: url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
+            padding: 120px 0 150px;
+            color: white;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(30, 58, 138, 0.9) 0%, rgba(34, 197, 94, 0.7) 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            font-weight: 300;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        /* Stats Box */
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .stat-box p {
+            margin: 0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        /* Search Card */
+        .search-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-top: -80px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-card .form-control, .search-card .form-select {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px 15px;
+            height: 50px;
+        }
+        
+        .search-card .form-control:focus, .search-card .form-select:focus {
+            box-shadow: 0 0 0 0.25rem rgba(34, 197, 94, 0.25);
+            border-color: var(--primary-color);
+        }
+
+        .search-card label {
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 8px;
+        }
+
+        .search-card .input-group-text {
+            background: transparent;
+            border: none;
+            position: absolute;
+            z-index: 4;
+            left: 10px;
+            top: 35px;
+            color: var(--primary-color);
+        }
+        
+        .search-card input, .search-card select {
+            padding-left: 40px !important;
+        }
+
+        /* Categories */
+        .category-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 15px;
+            background: white;
+            border-radius: 20px;
+            text-decoration: none;
+            color: var(--text-dark);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            height: 100%;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+        }
+
+        .category-card .icon-wrapper {
+            width: 70px;
+            height: 70px;
+            background: var(--bg-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .category-card:hover .icon-wrapper {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .category-card h5 {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        /* Pitch Card */
+        .pitch-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            background: #fff;
+            height: 100%;
+        }
+
+        .pitch-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+        }
+
+        .pitch-img {
+            height: 220px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .pitch-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--primary-color);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pitch-rating {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            color: #f59e0b;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .pitch-card .card-body {
+            padding: 20px;
+        }
+
+        .pitch-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: block;
+        }
+
+        .pitch-title:hover {
+            color: var(--primary-color);
+        }
+
+        .pitch-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .pitch-price span {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Timeline Process */
+        .process-step {
+            text-align: center;
+            position: relative;
+            padding: 0 15px;
+        }
+
+        .process-icon {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        .process-step::after {
+            content: '';
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: #e5e7eb;
+            border-top: 2px dashed var(--primary-color);
+            z-index: 1;
+        }
+
+        .process-step:last-child::after {
+            display: none;
+        }
+
+        @@media (max-width: 768px) {
+            .process-step::after {
+                display: none;
+            }
+            .process-step {
+                margin-bottom: 30px;
+            }
+        }
+
+        /* Banner Ads */
+        .ads-banner {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #1e40af 100%);
+            border-radius: 24px;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(30, 58, 138, 0.3);
+        }
+        
+        .ads-content {
+            padding: 60px;
+            color: white;
+        }
+
+        .ads-feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .ads-feature i {
+            color: var(--primary-color);
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .ads-image {
+            background: url('https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070&auto=format&fit=crop') center center/cover;
+            height: 100%;
+            min-height: 400px;
+        }
+
+        /* Testimonial */
+        .testimonial-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            height: 100%;
+        }
+
+        .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .nearby-item {
+            transition: all 0.2s ease;
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .nearby-item:hover {
+            background-color: #f8fafc;
+            transform: translateX(5px);
+        }
+    </style>
+}
+
+<!-- Hero Banner -->
+<section class="hero-banner">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-7 mb-5 mb-lg-0">
+                <h1 class="hero-title">Đặt sân thể thao<br/>Nhanh - Dễ - Tiện</h1>
+                <p class="hero-subtitle">Hệ thống đặt sân bóng đá, cầu lông, tennis hàng đầu Việt Nam. Khám phá hàng ngàn sân tập chất lượng gần bạn với giá tốt nhất.</p>
+                <div class="d-flex gap-3">
+                    <button class="btn btn-primary-custom px-4 py-3 fs-5"><i class="fa-solid fa-search me-2"></i> Tìm sân ngay</button>
+                    <button class="btn btn-outline-light rounded-pill px-4 py-3 fw-bold"><i class="fa-solid fa-map-location-dot me-2"></i> Xem bản đồ</button>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="stat-box">
+                            <h3>500+</h3>
+                            <p>Cơ sở</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-box">
+                            <h3>2000+</h3>
+                            <p>Sân tập</p>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="stat-box">
+                            <h3>10+</h3>
+                            <p>Môn thể thao</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Component -->
+<div class="container">
+    <div class="search-card">
+        <form action="@Url.Action("Index", "LoaiSan")" method="get">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3 position-relative">
+                    <label>Khu vực</label>
+                    <i class="fa-solid fa-location-dot input-group-text"></i>
+                    <input type="text" name="quan" class="form-control" placeholder="Tỉnh, Thành phố, Quận...">
+                </div>
+                <div class="col-md-3 position-relative">
+                    <label>Loại sân</label>
+                    <i class="fa-solid fa-layer-group input-group-text"></i>
+                    <select name="loai" class="form-select">
+                        <option value="">Tất cả loại sân</option>
+                        <option value="Bóng đá">Bóng đá</option>
+                        <option value="Cầu lông">Cầu lông</option>
+                        <option value="Quần vợt">Tennis</option>
+                        <option value="Pickleball">Pickleball</option>
+                    </select>
+                </div>
+                <div class="col-md-3 position-relative">
+                    <label>Ngày chơi</label>
+                    <i class="fa-regular fa-calendar input-group-text"></i>
+                    <input type="date" name="ngay" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary-custom w-100 py-3 rounded-3" style="border-radius: 12px !important;"><i class="fa-solid fa-search"></i> TÌM KIẾM SÂN</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Categories -->
+<section class="section-padding bg-white">
+    <div class="container">
+        <h2 class="section-title text-center">Khám Phá Các Môn Thể Thao</h2>
+        <div class="row g-4 justify-content-center">
+            <div class="col-6 col-md-4 col-lg-3">
+                <a asp-controller="LoaiSan" asp-action="BongDa" class="category-card">
+                    <div class="icon-wrapper"><i class="fa-solid fa-futbol"></i></div>
+                    <h5>Bóng đá</h5>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a asp-controller="LoaiSan" asp-action="CauLong" class="category-card">
+                    <div class="icon-wrapper"><i class="fa-solid fa-table-tennis-paddle-ball"></i></div>
+                    <h5>Cầu lông</h5>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a asp-controller="LoaiSan" asp-action="BongRo" class="category-card">
+                    <div class="icon-wrapper"><i class="fa-solid fa-basketball"></i></div>
+                    <h5>Bóng rổ</h5>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a asp-controller="LoaiSan" asp-action="Tennis" class="category-card">
+                    <div class="icon-wrapper"><i class="fa-solid fa-baseball"></i></div>
+                    <h5>Tennis</h5>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="@Url.Action("Index", "LoaiSan", new { loai = "Bóng chuyền" })" class="category-card">
+                    <div class="icon-wrapper"><i class="fa-solid fa-volleyball"></i></div>
+                    <h5>Bóng chuyền</h5>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a asp-controller="LoaiSan" asp-action="Pickleball" class="category-card">
+                    <div class="icon-wrapper"><i class="fa-solid fa-medal"></i></div>
+                    <h5>Pickleball</h5>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="@Url.Action("Index", "LoaiSan", new { loai = "Bơi lội" })" class="category-card">
+                    <div class="icon-wrapper"><i class="fa-solid fa-swimmer"></i></div>
+                    <h5>Bơi lội</h5>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a asp-controller="LoaiSan" asp-action="Index" class="category-card">
+                    <div class="icon-wrapper"><i class="fa-solid fa-ellipsis"></i></div>
+                    <h5>Môn khác</h5>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Pitches -->
+<section class="section-padding" style="background-color: var(--bg-light);">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end border-bottom border-success pb-2 mb-4" style="border-width: 4px !important; border-bottom-color: var(--primary-color) !important; width: fit-content;">
+            <h2 class="section-title mb-0 border-0 pb-0">Sân Nổi Bật Gần Đây</h2>
+        </div>
+        <div class="row g-4">
+            <!-- Card 1 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card pitch-card">
+                    <div class="position-relative">
+                        <img src="https://images.unsplash.com/photo-1518605368461-1ee7e1273932?q=80&w=2070&auto=format&fit=crop" class="pitch-img" alt="Sân bóng đá mini">
+                        <span class="pitch-badge">PB Club</span>
+                        <div class="pitch-rating"><i class="fa-solid fa-star"></i> 4.8</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex mb-2 text-muted small">
+                            <i class="fa-solid fa-location-dot mt-1 me-1 text-danger"></i> Thủ Đức, TP.HCM
+                        </div>
+                        <a href="/SanBong/Details/1" class="pitch-title">002 PB Club</a>
+                        <p class="text-muted small mb-3">Hệ thống sân Pickleball chuẩn thi đấu, không gian thoáng đãng.</p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <div class="pitch-price">250.000đ<span>/giờ</span></div>
+                        </div>
+                        <a href="/SanBong/Details/1" class="btn btn-primary-custom w-100 mt-3 py-2">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card pitch-card">
+                    <div class="position-relative">
+                        <img src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=2029&auto=format&fit=crop" class="pitch-img" alt="Sân bóng đá 7">
+                        <span class="pitch-badge">PB Club</span>
+                        <div class="pitch-rating"><i class="fa-solid fa-star"></i> 4.5</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex mb-2 text-muted small">
+                            <i class="fa-solid fa-location-dot mt-1 me-1 text-danger"></i> Quận 8, TP.HCM
+                        </div>
+                        <a href="/SanBong/Details/2" class="pitch-title">ST PB Club Q8</a>
+                        <p class="text-muted small mb-3">Sân Pickleball mới 100%, có bãi đậu xe ô tô và căn tin.</p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <div class="pitch-price">200.000đ<span>/giờ</span></div>
+                        </div>
+                        <a href="/SanBong/Details/2" class="btn btn-primary-custom w-100 mt-3 py-2">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card pitch-card">
+                    <div class="position-relative">
+                        <img src="https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?q=80&w=2070&auto=format&fit=crop" class="pitch-img" alt="Sân Tennis">
+                        <span class="pitch-badge" style="background: var(--secondary-color);">Bóng đá</span>
+                        <div class="pitch-rating"><i class="fa-solid fa-star"></i> 5.0</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex mb-2 text-muted small">
+                            <i class="fa-solid fa-location-dot mt-1 me-1 text-danger"></i> Quận 8, TP.HCM
+                        </div>
+                        <a href="/SanBong/Details/3" class="pitch-title">9196 Sport Q8</a>
+                        <p class="text-muted small mb-3">Sân bóng cỏ nhân tạo chất lượng cao, phục vụ 24/7.</p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <div class="pitch-price">220.000đ<span>/giờ</span></div>
+                        </div>
+                        <a href="/SanBong/Details/3" class="btn btn-primary-custom w-100 mt-3 py-2">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card pitch-card">
+                    <div class="position-relative">
+                        <img src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=2069&auto=format&fit=crop" class="pitch-img" alt="Sân bóng rổ">
+                        <span class="pitch-badge" style="background: #f97316;">PB Club</span>
+                        <div class="pitch-rating"><i class="fa-solid fa-star"></i> 4.7</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex mb-2 text-muted small">
+                            <i class="fa-solid fa-location-dot mt-1 me-1 text-danger"></i> Đống Đa, Hà Nội
+                        </div>
+                        <a href="/SanBong/Details/4" class="pitch-title">ACE PB Club</a>
+                        <p class="text-muted small mb-3">Câu lạc bộ Pickleball sôi động ngay trung tâm thủ đô.</p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <div class="pitch-price">300.000đ<span>/giờ</span></div>
+                        </div>
+                        <a href="/SanBong/Details/4" class="btn btn-primary-custom w-100 mt-3 py-2">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-5">
+            <a asp-controller="LoaiSan" asp-action="Index" class="btn btn-outline-custom text-decoration-none">Xem tất cả các sân <i class="fa-solid fa-arrow-right ms-2"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section id="map-section" class="section-padding bg-light">
+    <div class="container">
+        <h2 class="section-title">Bản Đồ Sân Gần Bạn</h2>
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card-custom h-100 p-2">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.319350036688!2d106.69538571533423!3d10.78683486195247!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f3692af023d%3A0xcd8d16d1180b9a52!2sNh%C3%A0%20v%C4%83n%20h%C3%B3a%20Thanh%20Ni%C3%AAn%20Th%C3%A0nh%20ph%E1%BB%91%20H%E1%BB%93%20Ch%C3%AD%20Minh!5e0!3m2!1svi!2s!4v1628178121287!5m2!1svi!2s" width="100%" height="450" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card-custom p-4 h-100">
+                    <h5 class="fw-bold mb-4">Sân bóng gần nhất (Bán kính 5km)</h5>
+                    
+                    <a asp-controller="BanDo" asp-action="Index" asp-route-maSan="1" class="d-flex border-bottom pb-3 mb-3 text-decoration-none nearby-item">
+                        <div class="bg-success text-white rounded p-2 text-center me-3" style="width: 50px; height: 50px;">
+                            <span class="d-block fw-bold" style="font-size: 0.8rem;">1.2</span>
+                            <span class="d-block" style="font-size: 0.7rem;">km</span>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1 text-dark">002 PB Club</h6>
+                            <p class="text-muted small mb-0"><i class="fa-solid fa-location-dot me-1"></i> Thủ Đức, TP.HCM</p>
+                        </div>
+                    </a>
+
+                    <a asp-controller="BanDo" asp-action="Index" asp-route-maSan="2" class="d-flex border-bottom pb-3 mb-3 text-decoration-none nearby-item">
+                        <div class="bg-success text-white rounded p-2 text-center me-3" style="width: 50px; height: 50px;">
+                            <span class="d-block fw-bold" style="font-size: 0.8rem;">2.5</span>
+                            <span class="d-block" style="font-size: 0.7rem;">km</span>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1 text-dark">ST PB Club Q8</h6>
+                            <p class="text-muted small mb-0"><i class="fa-solid fa-location-dot me-1"></i> Quận 8, TP.HCM</p>
+                        </div>
+                    </a>
+
+                    <a asp-controller="BanDo" asp-action="Index" asp-route-maSan="3" class="d-flex text-decoration-none nearby-item">
+                        <div class="bg-success text-white rounded p-2 text-center me-3" style="width: 50px; height: 50px;">
+                            <span class="d-block fw-bold" style="font-size: 0.8rem;">3.8</span>
+                            <span class="d-block" style="font-size: 0.7rem;">km</span>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1 text-dark">9196 Sport Q8</h6>
+                            <p class="text-muted small mb-0"><i class="fa-solid fa-location-dot me-1"></i> Quận 8, TP.HCM</p>
+                        </div>
+                    </a>
+
+                    <a asp-controller="BanDo" asp-action="Index" class="btn btn-outline-success w-100 mt-4 rounded-pill text-decoration-none">Xem tất cả trên bản đồ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Locations Section -->
+<section class="section-padding bg-white">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+            <h2 class="section-title mb-0 border-0 pb-0">Tìm Sân Theo Tỉnh Thành</h2>
+            <div class="mt-3 mt-md-0">
+                <div class="btn-group" role="group">
+                    <a href="@Url.Action("Index", "LoaiSan")" class="btn btn-success">Tất cả</a>
+                    <a href="@Url.Action("BongDa", "LoaiSan")" class="btn btn-outline-success">Bóng đá</a>
+                    <a href="@Url.Action("CauLong", "LoaiSan")" class="btn btn-outline-success">Cầu lông</a>
+                    <a href="@Url.Action("Tennis", "LoaiSan")" class="btn btn-outline-success">Tennis</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-3">
+            <div class="col-md-4 col-lg-3">
+                <a href="@Url.Action("Index", "LoaiSan", new { quan = "Hồ Chí Minh" })" class="card-custom p-3 text-center text-decoration-none d-block">
+                    <h5 class="text-dark fw-bold mb-1">TP. Hồ Chí Minh</h5>
+                    <span class="badge bg-light text-success border border-success">450 sân</span>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a href="@Url.Action("Index", "LoaiSan", new { quan = "Hà Nội" })" class="card-custom p-3 text-center text-decoration-none d-block">
+                    <h5 class="text-dark fw-bold mb-1">Hà Nội</h5>
+                    <span class="badge bg-light text-success border border-success">380 sân</span>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a href="@Url.Action("Index", "LoaiSan", new { quan = "Đà Nẵng" })" class="card-custom p-3 text-center text-decoration-none d-block">
+                    <h5 class="text-dark fw-bold mb-1">Đà Nẵng</h5>
+                    <span class="badge bg-light text-success border border-success">150 sân</span>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a href="@Url.Action("Index", "LoaiSan", new { quan = "Cần Thơ" })" class="card-custom p-3 text-center text-decoration-none d-block">
+                    <h5 class="text-dark fw-bold mb-1">Cần Thơ</h5>
+                    <span class="badge bg-light text-success border border-success">120 sân</span>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a href="@Url.Action("Index", "LoaiSan", new { quan = "Bình Dương" })" class="card-custom p-3 text-center text-decoration-none d-block">
+                    <h5 class="text-dark fw-bold mb-1">Bình Dương</h5>
+                    <span class="badge bg-light text-success border border-success">95 sân</span>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a href="@Url.Action("Index", "LoaiSan", new { quan = "Đồng Nai" })" class="card-custom p-3 text-center text-decoration-none d-block">
+                    <h5 class="text-dark fw-bold mb-1">Đồng Nai</h5>
+                    <span class="badge bg-light text-success border border-success">85 sân</span>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a href="@Url.Action("Index", "LoaiSan", new { quan = "Hải Phòng" })" class="card-custom p-3 text-center text-decoration-none d-block">
+                    <h5 class="text-dark fw-bold mb-1">Hải Phòng</h5>
+                    <span class="badge bg-light text-success border border-success">70 sân</span>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a href="@Url.Action("Index", "LoaiSan", new { quan = "Nha Trang" })" class="card-custom p-3 text-center text-decoration-none d-block">
+                    <h5 class="text-dark fw-bold mb-1">Nha Trang</h5>
+                    <span class="badge bg-light text-success border border-success">65 sân</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Timeline Booking -->
+<section class="section-padding bg-white">
+    <div class="container">
+        <h2 class="section-title text-center">Quy Trình Đặt Sân Đơn Giản</h2>
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="process-step">
+                    <div class="process-icon"><i class="fa-solid fa-magnifying-glass-location"></i></div>
+                    <h4 class="fw-bold">1. Tìm kiếm sân</h4>
+                    <p class="text-muted">Chọn môn thể thao, khu vực và tìm kiếm sân phù hợp nhất với nhu cầu của bạn.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="process-step">
+                    <div class="process-icon"><i class="fa-regular fa-calendar-check"></i></div>
+                    <h4 class="fw-bold">2. Chọn ngày giờ</h4>
+                    <p class="text-muted">Xem lịch trống trực tuyến (Real-time), chọn khung giờ vàng bạn muốn chơi.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="process-step">
+                    <div class="process-icon"><i class="fa-solid fa-circle-check"></i></div>
+                    <h4 class="fw-bold">3. Xác nhận & Thanh toán</h4>
+                    <p class="text-muted">Hoàn tất đặt sân nhanh chóng, hỗ trợ nhiều phương thức thanh toán an toàn.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="section-padding bg-white">
+    <div class="container">
+        <h2 class="section-title text-center">Khách Hàng Nói Gì Về Chúng Tôi</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="d-flex text-warning mb-3">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="fst-italic text-muted mb-4">"Tuyệt vời! Từ khi dùng SanBong.vn, đội bóng của tôi không bao giờ phải chạy lòng vòng tìm sân trống nữa. Đặt trước, thanh toán cọc nhanh gọn."</p>
+                    <div class="d-flex align-items-center">
+                        <img src="https://ui-avatars.com/api/?name=Hải+Nam&background=random" class="testimonial-avatar" alt="User">
+                        <div>
+                            <h6 class="fw-bold mb-0">Hải Nam</h6>
+                            <small class="text-muted">Trưởng team bóng đá phủi</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="d-flex text-warning mb-3">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="fst-italic text-muted mb-4">"Giao diện trực quan, dễ nhìn. Tôi thích tính năng xem lịch trống của nhiều sân cùng lúc, giúp tôi dễ dàng so sánh giá và thời gian phù hợp."</p>
+                    <div class="d-flex align-items-center">
+                        <img src="https://ui-avatars.com/api/?name=Thanh+Trúc&background=random" class="testimonial-avatar" alt="User">
+                        <div>
+                            <h6 class="fw-bold mb-0">Thanh Trúc</h6>
+                            <small class="text-muted">Người chơi cầu lông</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="d-flex text-warning mb-3">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                    </div>
+                    <p class="fst-italic text-muted mb-4">"Là chủ sân, tôi đánh giá cao phần mềm quản lý phía sau. Nó giúp tôi kiểm soát lịch đặt tránh bị trùng, và tính toán tiền dịch vụ chính xác."</p>
+                    <div class="d-flex align-items-center">
+                        <img src="https://ui-avatars.com/api/?name=Quốc+Bảo&background=random" class="testimonial-avatar" alt="User">
+                        <div>
+                            <h6 class="fw-bold mb-0">Quốc Bảo</h6>
+                            <small class="text-muted">Chủ cụm sân A1</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+ sân A1</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

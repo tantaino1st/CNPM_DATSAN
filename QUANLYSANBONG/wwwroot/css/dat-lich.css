@@ -1,0 +1,236 @@
+:root {
+    --primary-color: #2563eb;
+    --bg-body: #f3f6fb;
+    --status-empty: #dcfce7;
+    --status-booked: #fee2e2;
+    --status-playing: #e0f2fe;
+    --status-fixed: #f3e8ff;
+    --border-color: #e5e7eb;
+}
+
+body {
+    background-color: var(--bg-body);
+}
+
+/* Header & Quick Stats */
+.stat-pill {
+    background: #fff;
+    border-radius: 50px;
+    padding: 0.5rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Week Days Picker */
+.week-container {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.week-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+}
+
+.day-card {
+    height: 85px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.day-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.day-card .day-label {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.day-card .day-number {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.day-card.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.day-card.active .day-label,
+.day-card.active .day-number {
+    color: #fff;
+}
+
+.today-dot {
+    width: 6px;
+    height: 6px;
+    background: #10b981;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 8px;
+}
+
+.day-card.active .today-dot {
+    background: #fff;
+}
+
+/* Field Filter */
+.filter-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+/* Timeline Table */
+.timeline-container {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.timeline-grid {
+    display: grid;
+    gap: 4px;
+}
+
+.time-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.field-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 180px;
+}
+
+.cell-header {
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    color: #334155;
+}
+
+.field-name {
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.time-cell {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.time-cell.active-hour {
+    color: var(--primary-color);
+    font-weight: 700;
+    background: #eff6ff;
+    border-radius: 8px;
+}
+
+.booking-cell {
+    height: 52px;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    overflow: hidden;
+}
+
+.booking-cell:hover {
+    transform: scale(1.02);
+    z-index: 1;
+}
+
+.booking-cell.empty {
+    background: var(--status-empty);
+    border: 1px dashed #86efac;
+    color: #166534;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.booking-cell.booked {
+    background: var(--status-booked);
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+
+.booking-cell.playing {
+    background: var(--status-playing);
+    border: 1px solid #bae6fd;
+    color: #075985;
+}
+
+.booking-cell.fixed {
+    background: var(--status-fixed);
+    border: 1px solid #e9d5ff;
+    color: #6b21a8;
+}
+
+.booking-cell.closed {
+    background: #f1f5f9;
+    cursor: not-allowed;
+    opacity: 0.5;
+    color: #94a3b8;
+    justify-content: center;
+}
+
+/* Legend */
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+/* Responsive */
+@@media (max-width: 768px) {
+    .week-days-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}

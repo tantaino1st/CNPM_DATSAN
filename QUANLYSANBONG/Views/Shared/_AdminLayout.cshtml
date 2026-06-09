@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SanBong.vn</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/admin-dashboard.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a asp-controller="Home" asp-action="Index" class="logo-section text-decoration-none">
+            <div class="logo-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="logo-text">
+                <h5>SanBong.vn</h5>
+                <span>Quản lý sân thể thao</span>
+            </div>
+        </a>
+
+        <nav class="nav flex-column">
+            <p class="menu-label">TỔNG QUAN</p>
+            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")" asp-controller="Admin" asp-action="Dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+
+            <p class="menu-label">QUẢN LÝ SÂN</p>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "SanBong" ? "active" : "")" asp-controller="SanBong" asp-action="Index">
+                <i class="fas fa-list"></i> Danh sách sân
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminLoaiSan" ? "active" : "")" asp-controller="AdminLoaiSan" asp-action="Index">
+                <i class="fas fa-layer-group"></i> Loại sân
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "DatLich" ? "active" : "")" asp-controller="DatLich" asp-action="Index">
+                <i class="fas fa-calendar-alt"></i> Đặt lịch
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "BangGiaKhungGio" ? "active" : "")" asp-controller="BangGiaKhungGio" asp-action="Index">
+                <i class="fas fa-tag"></i> Bảng giá
+            </a>
+
+            <p class="menu-label">QUẢN LÝ BÁN HÀNG</p>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "DatSan" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" asp-controller="DatSan" asp-action="Index">
+                <i class="fas fa-clipboard-list"></i> Danh sách đơn đặt
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "KhachHang" ? "active" : "")" asp-controller="KhachHang" asp-action="Index">
+                <i class="fas fa-users"></i> Khách hàng
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "DichVu" ? "active" : "")" asp-controller="DichVu" asp-action="Index">
+                <i class="fas fa-concierge-bell"></i> Dịch vụ
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "HoaDon" ? "active" : "")" asp-controller="HoaDon" asp-action="Index">
+                <i class="fas fa-file-invoice-dollar"></i> Thanh toán hóa đơn
+            </a>
+
+            <p class="menu-label">QUẢN LÝ NỘI DUNG</p>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminBlog" ? "active" : "")" asp-controller="AdminBlog" asp-action="Index">
+                <i class="fas fa-newspaper"></i> Bài viết Blog
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminBlogCategory" ? "active" : "")" asp-controller="AdminBlogCategory" asp-action="Index">
+                <i class="fas fa-folder-open"></i> Chuyên mục Blog
+            </a>
+
+            <p class="menu-label">BÁO CÁO</p>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "BaoCao" ? "active" : "")" asp-controller="BaoCao" asp-action="Index">
+                <i class="fas fa-chart-line"></i> Doanh thu
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "NhatKyThaoTac" ? "active" : "")" asp-controller="NhatKyThaoTac" asp-action="Index">
+                <i class="fas fa-history"></i> Nhật ký thao tác
+            </a>
+
+            <p class="menu-label">HỆ THỐNG</p>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "NhanVien" ? "active" : "")" asp-controller="NhanVien" asp-action="Index">
+                <i class="fas fa-user-tie"></i> Nhân viên
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "NguoiDung" ? "active" : "")" asp-controller="NguoiDung" asp-action="Index">
+                <i class="fas fa-user-shield"></i> Tài khoản
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "CaiDat" ? "active" : "")" asp-controller="CaiDat" asp-action="Index">
+                <i class="fas fa-cog"></i> Cài đặt
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn border-0 p-0"><i class="fas fa-bars fs-5"></i></button>
+                <div class="d-none d-md-block">
+                    <span class="fw-medium" id="current-date">Thứ Năm, 04/06/2026</span>
+                    <span class="mx-2 text-muted">|</span>
+                    <span class="text-primary fw-bold" id="current-time">08:00:00</span>
+                    <span class="ms-3 text-warning"><i class="fas fa-sun me-1"></i> 32°C</span>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-light rounded-circle"><i class="fas fa-moon"></i></button>
+                <button class="btn btn-light rounded-circle position-relative">
+                    <i class="fas fa-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger p-1" style="font-size: 0.5rem;">2</span>
+                </button>
+                <div class="d-flex align-items-center gap-2 border-start ps-3">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center position-relative" style="width: 35px; height: 35px;">
+                        A
+                        <span class="position-absolute bottom-0 end-0 badge rounded-circle bg-success border border-white p-1"></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-4">
+            @RenderBody()
+        </div>
+    </main>
+
+    <a href="#" class="floating-chat">
+        <i class="fas fa-comment-dots"></i>
+        <span>Tin nhắn</span>
+    </a>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Cập nhật thời gian thực tế
+        function updateClock() {
+            const now = new Date();
+            const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+            const timeStr = now.toLocaleTimeString('vi-VN');
+            const dateStr = days[now.getDay()] + ', ' + now.toLocaleDateString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            
+            const timeEl = document.getElementById('current-time');
+            const dateEl = document.getElementById('current-date');
+            
+            if(timeEl) timeEl.textContent = timeStr;
+            if(dateEl) dateEl.textContent = dateStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

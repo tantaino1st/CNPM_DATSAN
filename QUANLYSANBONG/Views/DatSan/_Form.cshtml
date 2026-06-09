@@ -1,0 +1,71 @@
+@model QUANLYSANBONG.Models.DatSan
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3 border p-2 rounded bg-light" style="display: @(ViewData.ModelState.ErrorCount > 0 ? "block" : "none")"></div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="MaKH" class="form-label">Khách hàng <span class="text-danger">*</span></label>
+        <select asp-for="MaKH" class="form-select" asp-items="ViewBag.MaKH">
+            <option value="">-- Chọn khách hàng --</option>
+        </select>
+        <span asp-validation-for="MaKH" class="text-danger"></span>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <label asp-for="MaSan" class="form-label">Sân bóng <span class="text-danger">*</span></label>
+        <select asp-for="MaSan" class="form-select" asp-items="ViewBag.MaSan">
+            <option value="">-- Chọn sân bóng --</option>
+        </select>
+        <span asp-validation-for="MaSan" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="NgayDat" class="form-label">Ngày đặt <span class="text-danger">*</span></label>
+        <input asp-for="NgayDat" type="date" class="form-control" />
+        <span asp-validation-for="NgayDat" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label asp-for="MaBangGia" class="form-label">Khung giờ <span class="text-danger">*</span></label>
+        <select asp-for="MaBangGia" class="form-select" asp-items="ViewBag.MaBangGia">
+            <option value="">-- Chọn khung giờ --</option>
+        </select>
+        <span asp-validation-for="MaBangGia" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="TienCoc" class="form-label">Tiền cọc (VNĐ)</label>
+        <input asp-for="TienCoc" type="number" class="form-control" value="0" />
+        <span asp-validation-for="TienCoc" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label asp-for="TrangThai" class="form-label">Trạng thái <span class="text-danger">*</span></label>
+        <select asp-for="TrangThai" class="form-select">
+            <option value="Cho xac nhan">Chờ xác nhận</option>
+            <option value="Da xac nhan">Đã xác nhận</option>
+            <option value="Da hoan thanh">Đã hoàn thành</option>
+            <option value="Da huy">Đã hủy</option>
+        </select>
+        <span asp-validation-for="TrangThai" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="GhiChu" class="form-label">Ghi chú</label>
+    <textarea asp-for="GhiChu" class="form-control" rows="3" placeholder="Ghi chú thêm..."></textarea>
+    <span asp-validation-for="GhiChu" class="text-danger"></span>
+</div>
+
+<div class="mt-4">
+    <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-save"></i> Lưu dữ liệu
+    </button>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại
+    </a>
+</div>

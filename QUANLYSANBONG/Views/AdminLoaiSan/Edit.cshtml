@@ -1,0 +1,46 @@
+@model QUANLYSANBONG.Models.LoaiSan
+@{
+    ViewData["Title"] = "Chỉnh sửa loại sân";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="text-muted text-decoration-none small"><i class="fas fa-arrow-left me-1"></i> Quay lại danh sách</a>
+    <h3 class="fw-bold mt-2">Chỉnh sửa loại sân</h3>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <form asp-action="Edit">
+                    <input type="hidden" asp-for="MaLoaiSan" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="TenLoaiSan" class="form-label fw-bold">Tên loại sân *</label>
+                        <input asp-for="TenLoaiSan" class="form-control" required />
+                        <span asp-validation-for="TenLoaiSan" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Icon" class="form-label fw-bold">Icon (FontAwesome)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fas @(string.IsNullOrEmpty(Model.Icon) ? "fa-icons" : Model.Icon)"></i></span>
+                            <input asp-for="Icon" class="form-control border-start-0" />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="MoTa" class="form-label fw-bold">Mô tả</label>
+                        <textarea asp-for="MoTa" class="form-control" rows="4">@Model.MoTa</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary px-5 py-2 shadow-sm rounded-3 fw-bold">
+                        <i class="fas fa-save me-2"></i>CẬP NHẬT
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

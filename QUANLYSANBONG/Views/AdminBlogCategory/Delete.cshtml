@@ -1,0 +1,30 @@
+@model QUANLYSANBONG.Models.BlogCategory
+@{
+    ViewData["Title"] = "Xóa chuyên mục";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="text-muted text-decoration-none small"><i class="fas fa-arrow-left me-1"></i> Quay lại danh sách</a>
+    <h3 class="fw-bold mt-2 text-danger">Xóa chuyên mục</h3>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4 text-center">
+                <div class="modal-icon-box bg-danger bg-opacity-10 text-danger mx-auto mb-4" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 2rem;">
+                    <i class="fas fa-trash-alt"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Xác nhận xóa</h4>
+                <p class="text-muted mb-4">Bạn có chắc chắn muốn xóa chuyên mục <strong>@Model.TenDanhMuc</strong>? <br> Các bài viết thuộc chuyên mục này có thể bị ảnh hưởng.</p>
+
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger px-5 py-2 shadow-sm rounded-pill fw-bold">ĐỒNG Ý XÓA</button>
+                    <a asp-action="Index" class="btn btn-light px-5 py-2 ms-2 rounded-pill border">Hủy bỏ</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

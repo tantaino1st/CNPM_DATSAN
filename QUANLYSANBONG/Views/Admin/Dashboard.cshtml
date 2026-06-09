@@ -1,0 +1,224 @@
+@model QUANLYSANBONG.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-1">Chào buổi sáng! 👋</h3>
+        <p class="text-muted small mb-0">Hôm nay có vẻ là một ngày bận rộn tại các sân bóng.</p>
+    </div>
+    <a asp-controller="DatSan" asp-action="Create" class="btn btn-primary px-4 py-2 rounded-3 shadow-sm">
+        <i class="fas fa-plus me-2"></i> Đặt sân mới
+    </a>
+</div>
+
+<!-- Nút thao tác nhanh -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a asp-controller="SanBong" asp-action="Index" class="btn btn-quick-action">
+        <i class="fas fa-futbol text-success"></i> Quản lý sân
+    </a>
+    <a asp-controller="DatSan" asp-action="Index" class="btn btn-quick-action">
+        <i class="fas fa-calendar-plus text-primary"></i> Tạo lịch đặt
+    </a>
+    <a asp-controller="KhachHang" asp-action="Create" class="btn btn-quick-action">
+        <i class="fas fa-user-plus text-info"></i> Thêm khách
+    </a>
+    <a asp-controller="BaoCao" asp-action="Index" class="btn btn-quick-action">
+        <i class="fas fa-file-invoice-dollar text-warning"></i> Báo cáo
+    </a>
+    <a asp-controller="CaiDat" asp-action="Index" class="btn btn-quick-action">
+        <i class="fas fa-cog text-secondary"></i> Cài đặt
+    </a>
+</div>
+
+<!-- Thống kê -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card-stat">
+            <div class="icon-box bg-primary bg-opacity-10 text-primary">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <p class="stat-label">Đơn đặt hôm nay</p>
+            <h2 class="stat-value">@Model.DonDatHomNay</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card-stat">
+            <div class="icon-box bg-success bg-opacity-10 text-success">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <p class="stat-label">Doanh thu hôm nay</p>
+            <h2 class="stat-value">@Model.DoanhThuHomNay.ToString("N0")đ</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card-stat">
+            <div class="icon-box bg-info bg-opacity-10 text-info">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <p class="stat-label">Sân hoạt động</p>
+            <h2 class="stat-value">@Model.SoSanHoatDong / @Model.TongSoSan</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card-stat">
+            <div class="icon-box bg-warning bg-opacity-10 text-warning">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <p class="stat-label">Khách mới tháng này</p>
+            <h2 class="stat-value">@Model.KhachMoiThangNay</h2>
+        </div>
+    </div>
+</div>
+
+<!-- Biểu đồ -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="table-card h-100">
+            <h6 class="fw-bold mb-4">Doanh thu</h6>
+            <div style="height: 300px;">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="table-card h-100">
+            <h6 class="fw-bold mb-4">Loại sân</h6>
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Lịch đặt gần nhất -->
+<div class="table-card">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h6 class="fw-bold mb-0">Lịch đặt gần nhất</h6>
+        <a asp-controller="DatSan" asp-action="Index" class="btn btn-link text-decoration-none p-0 fw-medium">Xem tất cả</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th class="border-0 ps-3">Khách hàng</th>
+                    <th class="border-0">Sân</th>
+                    <th class="border-0">Thời gian</th>
+                    <th class="border-0">Giá</th>
+                    <th class="border-0 text-center">Trạng thái</th>
+                    <th class="border-0 text-end pe-3">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.LichDatGanNhat)
+                {
+                    <tr>
+                        <td class="border-0 ps-3">
+                            <div class="fw-bold">@item.TenKhachHang</div>
+                            <div class="text-muted small">@item.SoDienThoai</div>
+                        </td>
+                        <td class="border-0 fw-medium">@item.TenSan</td>
+                        <td class="border-0">@item.ThoiGian</td>
+                        <td class="border-0 fw-bold">@item.Gia.ToString("N0")đ</td>
+                        <td class="border-0 text-center">
+                            @{
+                                var badgeClass = item.TrangThai == "Da hoan thanh" ? "bg-success" : 
+                                               (item.TrangThai == "Da huy" ? "bg-danger" : "bg-warning text-dark");
+                            }
+                            <span class="badge @badgeClass rounded-pill px-3 py-2">@item.TrangThai</span>
+                        </td>
+                        <td class="border-0 text-end pe-3">
+                            <div class="d-flex justify-content-end gap-1">
+                                @if (item.TrangThai == "Cho xac nhan")
+                                {
+                                    <form asp-controller="DatSan" asp-action="XacNhan" asp-route-id="@item.MaDatSan" method="post">
+                                        <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold">Duyệt</button>
+                                    </form>
+                                    <form asp-controller="DatSan" asp-action="HuyDon" asp-route-id="@item.MaDatSan" method="post">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold">Hủy</button>
+                                    </form>
+                                }
+                                else if (item.TrangThai == "Da xac nhan" || item.TrangThai == "Da dat")
+                                {
+                                    <a asp-controller="HoaDon" asp-action="Create" asp-route-maDatSan="@item.MaDatSan" class="btn btn-sm btn-success rounded-pill px-3 fw-bold">
+                                        <i class="fas fa-money-bill-wave me-1"></i> Thanh toán
+                                    </a>
+                                }
+                                <a asp-controller="DatSan" asp-action="Details" asp-route-id="@item.MaDatSan" class="btn btn-sm btn-light border rounded-pill px-2" title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Biểu đồ Doanh thu (Line Chart)
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.DoanhThuTheoNgay.Select(x => x.Ngay))),
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: @Html.Raw(Json.Serialize(Model.DoanhThuTheoNgay.Select(x => x.DoanhThu))),
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointBorderColor: '#2563eb'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) { 
+                                if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+                                return value.toLocaleString('vi-VN');
+                            }
+                        },
+                        grid: { borderDash: [5, 5] }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Biểu đồ Loại sân (Doughnut Chart)
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.ThongKeLoaiSan.Select(x => x.TenLoai))),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(Model.ThongKeLoaiSan.Select(x => x.SoLuong))),
+                    backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { usePointStyle: true, padding: 20 }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    </script>
+}

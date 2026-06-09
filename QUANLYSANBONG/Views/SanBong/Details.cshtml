@@ -1,0 +1,151 @@
+@model QUANLYSANBONG.Models.SanBong
+@{
+    ViewData["Title"] = Model.TenSan;
+}
+
+<style>
+    .details-hero {
+        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('@(string.IsNullOrEmpty(Model.HinhAnh) ? "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2070" : Model.HinhAnh)') no-repeat center center/cover;
+        padding: 100px 0;
+        color: white;
+        margin-bottom: 50px;
+    }
+    .info-card {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+    .price-badge {
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 15px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.25rem;
+        display: inline-block;
+    }
+</style>
+
+<section class="details-hero">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3">@Model.TenSan</h1>
+        <p class="fs-5"><i class="fa-solid fa-location-dot me-2"></i> @Model.DiaChi, @Model.TinhThanh</p>
+    </div>
+</section>
+
+<div class="container mb-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <div class="info-card">
+                <h4 class="fw-bold mb-4">Thông tin cơ sở</h4>
+                <p class="text-muted">@Model.MoTa</p>
+                
+                <hr class="my-4">
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-uppercase small text-muted">Loại sân</h6>
+                        <p class="fw-medium">@Model.LoaiSan?.TenLoaiSan</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-uppercase small text-muted">Số lượng sân con</h6>
+                        <p class="fw-medium">@Model.SoLuongSanCon sân</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-uppercase small text-muted">Hotline</h6>
+                        <p class="fw-medium">@Model.SoDienThoai</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-uppercase small text-muted">Trạng thái</h6>
+                        <span class="badge @(Model.TrangThai == "Hoat dong" ? "bg-success" : "bg-warning")">@Model.TrangThai</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h4 class="fw-bold mb-4">Danh sách sân con</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tên sân con</th>
+                                <th>Sức chứa</th>
+                                <th class="text-end">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var sc in Model.SanCons)
+                            {
+                                <tr>
+                                    <td class="fw-bold">@sc.TenSanCon</td>
+                                    <td>@sc.SucChua người</td>
+                                    <td class="text-end">
+                                        <a href="/DatSan/CreateClient?maSan=@Model.MaSan&maSanCon=@sc.MaSanCon" class="btn btn-primary btn-sm rounded-pill px-3">Đặt ngay</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <h4 class="fw-bold mb-4">Vị trí bản đồ</h4>
+                <div class="rounded-4 overflow-hidden" style="height: 350px;">
+                    @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
+                    {
+                        <iframe width="100%" height="100%" frameborder="0" style="border:0" 
+                            src="https://maps.google.com/maps?q=@Model.Latitude,@Model.Longitude&hl=vi&z=16&output=embed" allowfullscreen>
+                        </iframe>
+                        <p class="mt-2 text-muted small"><i class="fa-solid fa-circle-info me-1"></i> Tọa độ: @Model.Latitude, @Model.Longitude</p>
+                    }
+                    else
+                    {
+                        <div class="bg-light h-100 d-flex align-items-center justify-content-center text-muted">
+                            <p>Chưa có thông tin vị trí trên bản đồ</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="info-card text-center">
+                <h6 class="fw-bold text-muted small text-uppercase mb-3">Giá thuê chỉ từ</h6>
+                <div class="price-badge mb-4">
+                    @Model.GiaMacDinh.ToString("N0")đ<span>/giờ</span>
+                </div>
+                <a href="/DatSan/CreateClient?maSan=@Model.MaSan" class="btn btn-success w-100 py-3 rounded-3 fw-bold fs-5 shadow-sm">
+                    <i class="fa-solid fa-calendar-check me-2"></i> ĐẶT SÂN NGAY
+                </a>
+                <p class="mt-3 text-muted small">Cam kết giá tốt nhất, không phí ẩn.</p>
+            </div>
+
+            <div class="info-card">
+                <h6 class="fw-bold mb-3">Liên hệ hỗ trợ</h6>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle me-3">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                    <div>
+                        <div class="small text-muted">Điện thoại</div>
+                        <div class="fw-bold">@Model.SoDienThoai</div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="bg-success bg-opacity-10 text-success p-3 rounded-circle me-3">
+                        <i class="fa-solid fa-comment-dots"></i>
+                    </div>
+                    <div>
+                        <div class="small text-muted">Zalo tư vấn</div>
+                        <div class="fw-bold">@Model.SoDienThoai</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

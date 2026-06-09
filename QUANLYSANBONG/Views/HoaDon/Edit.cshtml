@@ -1,0 +1,104 @@
+@model QUANLYSANBONG.Models.HoaDon
+@{
+    ViewData["Title"] = "Chi Tiết Hóa Đơn";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Hóa Đơn #@Model.MaHD</h6>
+                <div>
+                    <a asp-action="Print" asp-route-id="@Model.MaHD" target="_blank" class="btn btn-sm btn-secondary">
+                        <i class="fa-solid fa-print"></i> In Hóa Đơn
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <p><strong>Ngày lập:</strong> @(Model.NgayThanhToan?.ToString("dd/MM/yyyy HH:mm") ?? "-")</p>
+                    <p><strong>Khách hàng:</strong> @(Model.DatSan?.KhachHang?.HoTen ?? "Khách lẻ")</p>
+                    <p><strong>Sân:</strong> @Model.DatSan?.SanBong?.TenSan (Ngày đặt: @Model.DatSan?.NgayDat.ToString("dd/MM/yyyy"))</p>
+                    <p><strong>Tiền cọc:</strong> <span class="text-danger">@string.Format("{0:N0}", Model.DatSan?.TienCoc ?? 0) đ</span></p>
+                </div>
+
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="MaHD" />
+                    <input type="hidden" asp-for="MaDatSan" />
+                    <input type="hidden" asp-for="NgayThanhToan" />
+                    
+                    <partial name="_Form" model="Model" />
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Dịch Vụ Đi Kèm</h6>
+            </div>
+            <div class="card-body">
+                @if (Model.TrangThaiThanhToan == "Chua thanh toan")
+                {
+                    <form asp-action="AddDichVu" method="post" class="mb-4">
+                        <input type="hidden" name="maHD" value="@Model.MaHD" />
+                        <div class="input-group mb-2">
+                            <select name="maDichVu" class="form-select" asp-items="ViewBag.DichVus" required>
+                                <option value="">-- Chọn dịch vụ --</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <input type="number" name="soLuong" class="form-control" value="1" min="1" required />
+                            <button class="btn btn-outline-primary" type="submit"><i class="fa-solid fa-plus"></i> Thêm</button>
+                        </div>
+                    </form>
+                    <hr />
+                }
+
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Dịch vụ</th>
+                                <th>SL</th>
+                                <th>Thành tiền</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.ChiTietDichVus != null)
+                            {
+                                foreach (var ct in ViewBag.ChiTietDichVus as IEnumerable<QUANLYSANBONG.Models.ChiTietDichVu>)
+                                {
+                                    <tr>
+                                        <td>@ct.DichVu?.TenDichVu</td>
+                                        <td>@ct.SoLuong</td>
+                                        <td>@string.Format("{0:N0}", ct.ThanhTien)</td>
+                                        <td>
+                                            @if (Model.TrangThaiThanhToan == "Chua thanh toan")
+                                            {
+                                                <form asp-action="RemoveDichVu" method="post" class="d-inline">
+                                                    <input type="hidden" name="maHD" value="@Model.MaHD" />
+                                                    <input type="hidden" name="maDichVu" value="@ct.MaDichVu" />
+                                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Xóa">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

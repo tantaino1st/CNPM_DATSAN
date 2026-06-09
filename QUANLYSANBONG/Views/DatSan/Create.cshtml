@@ -1,0 +1,20 @@
+@model QUANLYSANBONG.Models.DatSan
+@{
+    ViewData["Title"] = "Tạo Lịch Đặt Sân";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Tạo Lịch Đặt Sân Mới</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <partial name="_Form" model="Model" />
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,47 @@
+@model QUANLYSANBONG.Models.KhachHang
+@{
+    ViewData["Title"] = "Hồ sơ của tôi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container section-padding pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2 class="section-title">Hồ sơ cá nhân</h2>
+            
+            <div class="card-custom p-4 mb-4">
+                <div class="d-flex align-items-center mb-4">
+                    <img src="https://ui-avatars.com/api/?name=@Model.HoTen&background=22c55e&color=fff&size=128" alt="@Model.HoTen" class="rounded-circle me-4 shadow-sm" width="100">
+                    <div>
+                        <h3 class="fw-bold mb-1">@Model.HoTen</h3>
+                        <p class="text-muted mb-0"><span class="badge bg-success">@Model.NhomKhach</span></p>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="text-muted small text-uppercase fw-bold">Họ và tên</label>
+                        <p class="fs-5 fw-medium">@Model.HoTen</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small text-uppercase fw-bold">Số điện thoại</label>
+                        <p class="fs-5 fw-medium">@Model.SoDienThoai</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small text-uppercase fw-bold">Email</label>
+                        <p class="fs-5 fw-medium">@(string.IsNullOrEmpty(Model.GhiChu) ? "Chưa cập nhật" : Model.GhiChu)</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small text-uppercase fw-bold">Thành viên từ</label>
+                        <p class="fs-5 fw-medium">Dữ liệu hệ thống</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top">
+                    <button class="btn btn-primary-custom px-4"><i class="fa-solid fa-user-pen me-2"></i> Chỉnh sửa hồ sơ</button>
+                    <a asp-action="BookingHistory" class="btn btn-outline-custom ms-2"><i class="fa-solid fa-clock-rotate-left me-2"></i> Lịch sử đặt sân</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

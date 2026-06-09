@@ -1,0 +1,80 @@
+@model IEnumerable<QUANLYSANBONG.Models.DatSan>
+@{
+    ViewData["Title"] = "Lịch sử đặt sân";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container section-padding pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h2 class="section-title">Lịch sử đặt sân</h2>
+            
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover bg-white border shadow-sm align-middle" style="border-radius: 12px; overflow: hidden;">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Mã đơn</th>
+                                <th>Thông tin sân</th>
+                                <th>Thời gian chơi</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th class="text-center pe-4">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-muted">#@item.MaDatSan</td>
+                                    <td>
+                                        <div class="fw-bold">@item.SanBong?.TenSan</div>
+                                        <div class="small text-muted">@item.SanCon?.TenSanCon</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">@item.NgayDat.ToString("dd/MM/yyyy")</div>
+                                        <div class="small text-primary">@item.GioBatDau.ToString(@"hh\:mm") - @item.GioKetThuc.ToString(@"hh\:mm") (@item.ThoiLuong giờ)</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-success">@string.Format("{0:N0}", item.TongTien) đ</div>
+                                    </td>
+                                    <td>
+                                        @if (item.TrangThai == "Cho xac nhan")
+                                        {
+                                            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">Chờ xác nhận</span>
+                                        }
+                                        else if (item.TrangThai == "Da xac nhan")
+                                        {
+                                            <span class="badge bg-primary px-3 py-2 rounded-pill">Đã xác nhận</span>
+                                        }
+                                        else if (item.TrangThai == "Da hoan thanh")
+                                        {
+                                            <span class="badge bg-success px-3 py-2 rounded-pill">Đã hoàn thành</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger px-3 py-2 rounded-pill">Đã hủy</span>
+                                        }
+                                    </td>
+                                    <td class="text-center pe-4">
+                                        <a asp-action="BookingDetails" asp-route-id="@item.MaDatSan" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Chi tiết</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5 card-custom">
+                    <i class="fa-regular fa-calendar-xmark fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">Bạn chưa có lịch sử đặt sân nào</h4>
+                    <p>Hãy bắt đầu tìm kiếm và đặt sân ngay hôm nay!</p>
+                    <a asp-controller="SanBong" asp-action="TimSan" class="btn btn-primary-custom mt-3">Tìm sân ngay</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

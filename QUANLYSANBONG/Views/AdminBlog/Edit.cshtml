@@ -1,0 +1,115 @@
+@model QUANLYSANBONG.Models.BlogPost
+@{
+    ViewData["Title"] = "Chỉnh sửa bài viết";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="text-muted text-decoration-none small"><i class="fas fa-arrow-left me-1"></i> Quay lại danh sách</a>
+    <h3 class="fw-bold mt-2">Chỉnh sửa bài viết</h3>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="mb-3">
+                        <label asp-for="TieuDe" class="form-label fw-bold">Tiêu đề bài viết *</label>
+                        <input asp-for="TieuDe" class="form-control form-control-lg border-2 shadow-xs" placeholder="Nhập tiêu đề..." id="tieu-de-input" onkeyup="generateSlug()" />
+                        <span asp-validation-for="TieuDe" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Slug" class="form-label fw-bold text-muted small text-uppercase">Đường dẫn thân thiện (Slug) *</label>
+                        <input asp-for="Slug" class="form-control form-control-sm border-0 bg-light" id="slug-output" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MoTaNgan" class="form-label fw-bold">Mô tả ngắn *</label>
+                        <textarea asp-for="MoTaNgan" class="form-control shadow-xs" rows="3">@Model.MoTaNgan</textarea>
+                        <span asp-validation-for="MoTaNgan" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="NoiDung" class="form-label fw-bold">Nội dung chi tiết *</label>
+                        <textarea asp-for="NoiDung" class="form-control shadow-xs" rows="15">@Model.NoiDung</textarea>
+                        <span asp-validation-for="NoiDung" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Ảnh đại diện</label>
+                        <div class="border rounded-4 p-2 text-center bg-light">
+                            <img id="preview-img" src="@(string.IsNullOrEmpty(Model.AnhDaiDien) ? "/images/default-blog.jpg" : Model.AnhDaiDien)" class="img-fluid rounded-3 mb-3" style="max-height: 200px; width: 100%; object-fit: cover;">
+                            <input type="file" name="uploadAnh" id="file-input" class="form-control form-control-sm" accept="image/*" onchange="previewImage(event)" />
+                        </div>
+                    </div>
+
+                    <div class="card bg-light border-0 rounded-4 p-3 mb-4">
+                        <div class="mb-3">
+                            <label asp-for="BlogCategoryId" class="form-label fw-bold">Chuyên mục</label>
+                            <select asp-for="BlogCategoryId" class="form-select border-0 shadow-xs" asp-items="ViewBag.Categories"></select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ThoiGianDoc" class="form-label fw-bold">Thời gian đọc</label>
+                            <input asp-for="ThoiGianDoc" class="form-control border-0 shadow-xs" />
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" asp-for="NoiBat">
+                                <label class="form-check-label fw-bold" asp-for="NoiBat">Bài viết nổi bật</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" asp-for="TrangThai">
+                                <label class="form-check-label fw-bold" asp-for="TrangThai">Công khai ngay</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 shadow-sm rounded-3 fw-bold">
+                        <i class="fas fa-save me-2"></i>CẬP NHẬT BÀI VIẾT
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function(){
+                var output = document.getElementById('preview-img');
+                output.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function generateSlug() {
+            var title = document.getElementById("tieu-de-input").value;
+            var slug = title.toLowerCase()
+                .replace(/á|à|ả|ạ|ã|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/g, "a")
+                .replace(/é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ/g, "e")
+                .replace(/i|í|ì|ỉ|ĩ|ị/g, "i")
+                .replace(/ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ/g, "o")
+                .replace(/ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự/g, "u")
+                .replace(/ý|ỳ|ỷ|ỹ|ỵ/g, "y")
+                .replace(/đ/g, "d")
+                .replace(/[^a-z0-9]/g, "-")
+                .replace(/-+/g, "-")
+                .replace(/^-|-$/g, "");
+            document.getElementById("slug-output").value = slug;
+        }
+    </script>
+}

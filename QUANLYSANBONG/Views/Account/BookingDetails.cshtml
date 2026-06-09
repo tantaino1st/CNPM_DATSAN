@@ -1,0 +1,126 @@
+@model QUANLYSANBONG.Models.DatSan
+@{
+    ViewData["Title"] = "Chi tiết đơn đặt sân";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container section-padding pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="mb-4">
+                <a asp-action="BookingHistory" class="text-muted text-decoration-none small">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại lịch sử
+                </a>
+                <div class="d-flex justify-content-between align-items-end mt-2">
+                    <h2 class="fw-bold mb-0">Chi tiết đơn #@Model.MaDatSan</h2>
+                    <span class="badge @(Model.TrangThai == "Da hoan thanh" ? "bg-success" : (Model.TrangThai == "Da huy" ? "bg-danger" : "bg-warning text-dark")) px-3 py-2 rounded-pill">
+                        @Model.TrangThai
+                    </span>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-3">Thông tin đặt sân</h5>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="text-muted small text-uppercase fw-bold d-block mb-1">Sân thể thao</label>
+                            <p class="fw-bold mb-0 text-primary fs-5">@Model.SanBong?.TenSan</p>
+                            <p class="text-muted small">@Model.SanCon?.TenSanCon</p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <label class="text-muted small text-uppercase fw-bold d-block mb-1">Ngày đặt</label>
+                            <p class="fw-bold mb-0 fs-5">@Model.NgayDat.ToString("dddd, dd/MM/yyyy")</p>
+                            <p class="text-muted small">Thời gian đặt: @Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small text-uppercase fw-bold d-block mb-1">Thời gian chơi</label>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light p-2 rounded-3 me-3 text-center" style="min-width: 80px;">
+                                    <span class="d-block fw-bold fs-5">@Model.GioBatDau.ToString(@"hh\:mm")</span>
+                                    <span class="text-muted smaller">Bắt đầu</span>
+                                </div>
+                                <i class="fas fa-arrow-right text-muted"></i>
+                                <div class="bg-light p-2 rounded-3 ms-3 text-center" style="min-width: 80px;">
+                                    <span class="d-block fw-bold fs-5">@Model.GioKetThuc.ToString(@"hh\:mm")</span>
+                                    <span class="text-muted smaller">Kết thúc</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <label class="text-muted small text-uppercase fw-bold d-block mb-1">Tổng thời lượng</label>
+                            <p class="fw-bold fs-4 mb-0">@Model.ThoiLuong giờ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.ChiTietDichVus != null && Model.ChiTietDichVus.Any())
+            {
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4 border-bottom pb-3">Dịch vụ sử dụng</h5>
+                        <div class="table-responsive">
+                            <table class="table table-borderless align-middle mb-0">
+                                <thead>
+                                    <tr class="text-muted small text-uppercase">
+                                        <th>Dịch vụ</th>
+                                        <th class="text-center">Số lượng</th>
+                                        <th class="text-end">Đơn giá</th>
+                                        <th class="text-end">Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var dv in Model.ChiTietDichVus)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">@dv.DichVu?.TenDichVu</div>
+                                                <div class="small text-muted">@dv.DichVu?.DonViTinh</div>
+                                            </td>
+                                            <td class="text-center">@dv.SoLuong</td>
+                                            <td class="text-end">@string.Format("{0:N0}", dv.DonGia) đ</td>
+                                            <td class="text-end fw-bold">@string.Format("{0:N0}", dv.ThanhTien) đ</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="card border-0 shadow-sm rounded-4 bg-primary text-white">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="opacity-75">Tiền thuê sân:</span>
+                        <span class="fw-bold">@string.Format("{0:N0}", Model.TongTien) đ</span>
+                    </div>
+                    @if (Model.ChiTietDichVus != null && Model.ChiTietDichVus.Any())
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="opacity-75">Tiền dịch vụ:</span>
+                            <span class="fw-bold">@string.Format("{0:N0}", Model.ChiTietDichVus.Sum(x => x.ThanhTien)) đ</span>
+                        </div>
+                    }
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-top pt-3 border-white border-opacity-25">
+                        <span class="fs-5 fw-bold">Tổng cộng:</span>
+                        <span class="fs-4 fw-bold">@string.Format("{0:N0}", (Model.TongTien + (Model.ChiTietDichVus?.Sum(x => x.ThanhTien) ?? 0))) đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="opacity-75">Đã đặt cọc:</span>
+                        <span class="fw-bold text-warning">@string.Format("{0:N0}", Model.TienCoc) đ</span>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.GhiChu))
+            {
+                <div class="mt-4 p-3 bg-light rounded-3 border-start border-4 border-info">
+                    <h6 class="fw-bold text-info mb-1"><i class="fas fa-info-circle me-1"></i> Ghi chú khách hàng</h6>
+                    <p class="mb-0 small">@Model.GhiChu</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SanBong.vn</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+    
+    <style>
+        :root {
+            --primary-color: #22c55e; /* Xanh lá */
+            --primary-hover: #16a34a;
+            --secondary-color: #1e3a8a; /* Xanh đậm */
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --bg-light: #f3f4f6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background-color: #fafafa;
+        }
+
+        /* Navbar & Header */
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+        }
+
+        .navbar-brand span {
+            color: var(--secondary-color);
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-dark) !important;
+            margin: 0 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color) !important;
+        }
+
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(34, 197, 94, 0.2);
+        }
+
+        .btn-primary-custom:hover {
+            background-color: var(--primary-hover);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-outline-custom {
+            color: var(--secondary-color);
+            border: 2px solid var(--secondary-color);
+            border-radius: 50px;
+            padding: 8px 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-custom:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* Utilities */
+        .section-padding {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin-bottom: 2.5rem;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .section-title.text-center::after {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 60px 0 20px;
+        }
+
+        .footer h5 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .footer-link {
+            color: #d1d5db;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .social-icons a {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+
+        .social-icons a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        /* Card Global */
+        .card-custom {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        /* Modal Styles */
+        .modal-backdrop.show {
+            opacity: 0.7;
+            backdrop-filter: blur(5px);
+            background-color: rgba(0,0,0,0.6);
+        }
+        .modal-content.custom-modal {
+            border-radius: 18px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .modal-icon-box {
+            width: 60px;
+            height: 60px;
+            background-color: #dcfce7;
+            color: #16a34a;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 15px;
+        }
+        .btn-close-custom {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f3f4f6;
+            border-radius: 50%;
+            padding: 8px;
+            opacity: 0.8;
+            z-index: 10;
+        }
+        .btn-close-custom:hover {
+            background: #e5e7eb;
+            opacity: 1;
+        }
+        .form-control-icon {
+            position: relative;
+        }
+        .form-control-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        .form-control-icon input {
+            padding-left: 45px;
+            border-radius: 10px;
+            height: 48px;
+        }
+        .form-control-icon input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(22, 163, 74, 0.25);
+            border-color: #16a34a;
+        }
+        .btn-modal-submit {
+            background-color: #16a34a;
+            color: white;
+            border-radius: 10px;
+            height: 48px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-modal-submit:hover {
+            background-color: #15803d;
+            color: white;
+        }
+        .badge-soft {
+            background-color: #dcfce7;
+            color: #16a34a;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    @using Microsoft.AspNetCore.Http
+    @inject IHttpContextAccessor HttpContextAccessor
+    @{
+        var userName = HttpContextAccessor.HttpContext?.Session.GetString("TenDangNhap");
+        var userRole = HttpContextAccessor.HttpContext?.Session.GetString("VaiTro");
+    }
+
+    <!-- Toast Notifications -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 2000">
+        @if (TempData["Success"] != null)
+        {
+            <div class="toast align-items-center text-bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body fw-bold">
+                        <i class="fa-solid fa-circle-check me-2"></i> @TempData["Success"]
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="toast align-items-center text-bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body fw-bold">
+                        <i class="fa-solid fa-circle-exclamation me-2"></i> @TempData["Error"]
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Header / Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                <i class="fa-solid fa-futbol"></i> SanBong<span>.vn</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="SanBong" asp-action="TimSan">
+                            <i class="fa-solid fa-magnifying-glass"></i> Tìm sân
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "BanDo" ? "active" : "")" asp-controller="BanDo" asp-action="Index">Bản đồ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Blog" ? "active" : "")" asp-controller="Blog" asp-action="Index">
+                            <i class="fa-solid fa-book-open"></i> Blog
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle @(ViewContext.RouteData.Values["controller"]?.ToString() == "LoaiSan" ? "active" : "")" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Loại sân
+                        </a>
+                        <ul class="dropdown-menu border-0 shadow-sm rounded-3" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item py-2" asp-controller="LoaiSan" asp-action="BongDa"><i class="fa-solid fa-futbol me-2 text-success"></i>Bóng đá</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="LoaiSan" asp-action="Pickleball"><i class="fa-solid fa-medal me-2 text-warning"></i>Pickleball</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="LoaiSan" asp-action="CauLong"><i class="fa-solid fa-table-tennis-paddle-ball me-2 text-primary"></i>Cầu lông</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="LoaiSan" asp-action="Tennis"><i class="fa-solid fa-baseball me-2 text-danger"></i>Tennis</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="LoaiSan" asp-action="BongRo"><i class="fa-solid fa-basketball me-2 text-warning"></i>Bóng rổ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center gap-3">
+                    @if (string.IsNullOrEmpty(userName))
+                    {
+                        <a href="#" class="text-decoration-none fw-bold text-dark" data-bs-toggle="modal" data-bs-target="#loginModal">Đăng nhập</a>
+                        <a href="#" class="btn btn-outline-custom d-none d-lg-block" data-bs-toggle="modal" data-bs-target="#registerModal">Đăng ký</a>
+                        <a href="#" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="fa-solid fa-calendar-check me-1"></i> Đặt sân ngay</a>
+                    }
+                    else
+                    {
+                        <div class="dropdown">
+                            <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle fw-bold" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="https://ui-avatars.com/api/?name=@userName&background=22c55e&color=fff" alt="" width="35" height="35" class="rounded-circle me-2">
+                                @userName
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="dropdownUser">
+                                @if (userRole == "Admin" || userRole == "Quan ly" || userRole == "Nhan vien" || userRole == "Ke toan")
+                                {
+                                    <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index"><i class="fa-solid fa-gauge me-2 text-primary"></i> Trang Quản trị</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                }
+                                <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile"><i class="fa-regular fa-user me-2 text-muted"></i> Hồ sơ của tôi</a></li>
+                                <li><a class="dropdown-item" asp-controller="Account" asp-action="BookingHistory"><i class="fa-solid fa-clock-rotate-left me-2 text-muted"></i> Lịch sử đặt sân</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <a class="navbar-brand text-white fs-3 fw-bold mb-3 d-inline-block text-decoration-none" href="#">
+                        <i class="fa-solid fa-futbol text-success"></i> SanBong<span>.vn</span>
+                    </a>
+                    <p class="text-light opacity-75 pe-md-4">
+                        Nền tảng tìm kiếm và đặt sân thể thao nhanh chóng, dễ dàng và tiện lợi nhất tại Việt Nam. Khám phá hàng ngàn sân tập chất lượng gần bạn.
+                    </p>
+                    <div class="d-flex mb-2">
+                        <i class="fa-solid fa-phone text-success mt-1 me-3"></i>
+                        <span class="text-light fw-bold fs-5">Hotline: 1900 1234</span>
+                    </div>
+                    <div class="social-icons mt-4">
+                        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5>Khám phá</h5>
+                    <a asp-controller="SanBong" asp-action="TimSan" class="footer-link">Tìm sân</a>
+                    <a asp-controller="BanDo" asp-action="Index" class="footer-link">Bản đồ</a>
+                    <a href="#" class="footer-link">Sân bóng đá</a>
+                    <a href="#" class="footer-link">Sân tennis</a>
+                    <a href="#" class="footer-link">Sân cầu lông</a>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5>Hỗ trợ</h5>
+                    <a href="#" class="footer-link">Hướng dẫn đặt sân</a>
+                    <a href="#" class="footer-link">Câu hỏi thường gặp</a>
+                    <a href="#" class="footer-link">Chính sách bảo mật</a>
+                    <a href="#" class="footer-link">Liên hệ</a>
+                </div>
+                <div class="col-lg-4 col-md-4 mb-4">
+                    <h5>Đăng ký nhận ưu đãi</h5>
+                    <p class="text-light opacity-75 mb-3">Nhận ngay mã giảm giá 50k cho lần đặt sân đầu tiên khi đăng ký email.</p>
+                    <form class="d-flex">
+                        <input type="email" class="form-control rounded-start-pill border-0" placeholder="Nhập email của bạn" required>
+                        <button class="btn btn-primary-custom rounded-end-pill px-3 m-0" type="submit" style="border-radius: 0 50px 50px 0;">Đăng ký</button>
+                    </form>
+                </div>
+            </div>
+            <div class="row mt-4 border-top border-secondary pt-4">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0 text-light opacity-50">&copy; @DateTime.Now.Year SanBong.vn. Đồ án môn học ASP.NET Core.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Visa_Logo.png/640px-Visa_Logo.png" height="25" class="bg-white rounded px-2 me-2" alt="Visa">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" height="25" class="bg-white rounded px-2 me-2" alt="Mastercard">
+                    <img src="https://developers.momo.vn/v3/assets/images/square-8c08a00f550e40a2efafea4a005b1232.png" height="25" class="rounded" alt="MoMo">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal p-3">
+          <button type="button" class="btn-close btn-close-custom" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div class="modal-body text-center">
+            <div class="modal-icon-box">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <h3 class="fw-bold mb-2">Đăng nhập</h3>
+            <p class="text-muted mb-4">Đăng nhập để đặt sân nhanh hơn và xem lịch sử</p>
+            
+            <form asp-controller="Account" asp-action="Login" method="post" id="loginForm">
+                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                <div class="form-control-icon mb-3">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" name="PhoneOrEmail" id="loginPhone" class="form-control" placeholder="Số điện thoại hoặc Email" required>
+                </div>
+                <div class="form-control-icon mb-4">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" name="Password" id="loginPassword" class="form-control" placeholder="Mật khẩu" required>
+                </div>
+                <button type="submit" class="btn btn-modal-submit w-100 mb-3">
+                    <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> Đăng nhập
+                </button>
+            </form>
+            <p class="mb-0 text-muted">Chưa có tài khoản? <a href="#" class="text-success fw-bold text-decoration-none" onclick="switchModal('#registerModal', '#loginModal')">Đăng ký ngay</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal p-3">
+          <button type="button" class="btn-close btn-close-custom" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div class="modal-body text-center">
+            <div class="modal-icon-box">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <h3 class="fw-bold mb-2">Đăng ký</h3>
+            <p class="text-muted mb-3">Tạo tài khoản để đặt sân dễ dàng hơn</p>
+            
+            <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
+                <span class="badge badge-soft">Đặt sân nhanh</span>
+                <span class="badge badge-soft">Xem lịch sử</span>
+                <span class="badge badge-soft">Nhận ưu đãi</span>
+            </div>
+
+            <form asp-controller="Account" asp-action="Register" method="post" id="registerForm">
+                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                <div class="form-control-icon mb-3">
+                    <i class="fa-solid fa-id-card"></i>
+                    <input type="text" name="FullName" id="regFullName" class="form-control" placeholder="Họ và tên *" required>
+                </div>
+                <div class="form-control-icon mb-3">
+                    <i class="fa-solid fa-phone"></i>
+                    <input type="text" name="Phone" id="regPhone" class="form-control" placeholder="Số điện thoại *" required>
+                </div>
+                <div class="form-control-icon mb-3">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" name="Email" id="regEmail" class="form-control" placeholder="Email (Tùy chọn)">
+                </div>
+                <div class="form-control-icon mb-4">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" name="Password" id="regPassword" class="form-control" placeholder="Mật khẩu (ít nhất 6 ký tự) *" required minlength="6">
+                </div>
+                <button type="submit" class="btn btn-modal-submit w-100 mb-3">
+                    <i class="fa-solid fa-user-check me-2"></i> Đăng ký
+                </button>
+            </form>
+            <p class="mb-0 text-muted">Đã có tài khoản? <a href="#" class="text-success fw-bold text-decoration-none" onclick="switchModal('#loginModal', '#registerModal')">Đăng nhập</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar scroll effect
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 50) {
+                $('.navbar').addClass('shadow-sm');
+            } else {
+                $('.navbar').removeClass('shadow-sm');
+            }
+        });
+
+        // Modal Switch Logic
+        function switchModal(targetId, currentId) {
+            var currentModalElement = document.querySelector(currentId);
+            var currentModal = bootstrap.Modal.getInstance(currentModalElement);
+            if(currentModal) {
+                currentModal.hide();
+            }
+            
+            setTimeout(function() {
+                var targetModalElement = document.querySelector(targetId);
+                var targetModal = new bootstrap.Modal(targetModalElement);
+                targetModal.show();
+            }, 400); // 400ms is standard bootstrap modal transition time
+        }
+
+        // Form Validation Logic
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            var phone = document.getElementById('loginPhone').value.trim();
+            var pass = document.getElementById('loginPassword').value.trim();
+            if (!phone || !pass) {
+                e.preventDefault();
+                alert('Vui lòng nhập đầy đủ Số điện thoại và Mật khẩu!');
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            var name = document.getElementById('regFullName').value.trim();
+            var phone = document.getElementById('regPhone').value.trim();
+            var pass = document.getElementById('regPassword').value.trim();
+            if (!name || !phone || !pass) {
+                e.preventDefault();
+                alert('Vui lòng nhập đầy đủ thông tin bắt buộc (*)!');
+                return;
+            }
+            if (pass.length < 6) {
+                e.preventDefault();
+                alert('Mật khẩu phải có ít nhất 6 ký tự!');
+            }
+        });
+
+        // Auto hide toast
+        document.addEventListener('DOMContentLoaded', function () {
+            var toasts = document.querySelectorAll('.toast');
+            toasts.forEach(function(toastNode) {
+                var toast = new bootstrap.Toast(toastNode, { delay: 5000 });
+                toast.show();
+            });
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

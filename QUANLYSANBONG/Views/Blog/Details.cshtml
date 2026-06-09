@@ -1,0 +1,66 @@
+@model QUANLYSANBONG.Models.BlogDetailViewModel
+@{
+    ViewData["Title"] = Model.BaiViet.TieuDe;
+}
+
+<link rel="stylesheet" href="~/css/blog.css" asp-append-version="true" />
+
+<div class="container my-5" style="max-width: 900px;">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-success">Blog</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", new { categoryId = Model.BaiViet.BlogCategoryId })" class="text-success">@Model.BaiViet.Category?.TenDanhMuc</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Chi tiết</li>
+        </ol>
+    </nav>
+
+    <div class="post-header mb-5">
+        <h1 class="fw-extrabold mb-3" style="font-size: 2.5rem; line-height: 1.2;">@Model.BaiViet.TieuDe</h1>
+        <div class="d-flex align-items-center gap-3 text-muted">
+            <div class="d-flex align-items-center">
+                <i class="far fa-calendar-alt me-2"></i> @Model.BaiViet.NgayDang.ToString("dd/MM/yyyy")
+            </div>
+            <div class="d-flex align-items-center">
+                <i class="far fa-clock me-2"></i> @Model.BaiViet.ThoiGianDoc
+            </div>
+            <div class="d-flex align-items-center">
+                <i class="far fa-eye me-2"></i> @Model.BaiViet.LuotXem lượt xem
+            </div>
+        </div>
+    </div>
+
+    <img src="@(string.IsNullOrEmpty(Model.BaiViet.AnhDaiDien) ? "/images/default-blog.jpg" : Model.BaiViet.AnhDaiDien)" class="img-fluid rounded-4 shadow-sm mb-5 w-100" style="max-height: 500px; object-fit: cover;" alt="@Model.BaiViet.TieuDe">
+
+    <div class="post-content mb-5" style="font-size: 1.1rem; line-height: 1.8; color: #334155;">
+        @Html.Raw(Model.BaiViet.NoiDung)
+    </div>
+
+    <hr class="my-5">
+
+    @if (Model.BaiVietLienQuan.Any())
+    {
+        <div class="related-posts">
+            <h4 class="fw-bold mb-4">Bài viết liên quan</h4>
+            <div class="row g-4">
+                @foreach (var p in Model.BaiVietLienQuan)
+                {
+                    <div class="col-md-4">
+                        <div class="blog-card h-100">
+                            <div class="blog-card-img" style="height: 150px;">
+                                <a asp-action="Details" asp-route-id="@p.Id">
+                                    <img src="@(string.IsNullOrEmpty(p.AnhDaiDien) ? "/images/default-blog.jpg" : p.AnhDaiDien)" alt="@p.TieuDe">
+                                </a>
+                            </div>
+                            <div class="blog-card-body p-3">
+                                <h6 class="post-title" style="font-size: 1rem; margin-bottom: 8px;">
+                                    <a asp-action="Details" asp-route-id="@p.Id">@p.TieuDe</a>
+                                </h6>
+                                <div class="small text-muted">@p.NgayDang.ToString("dd/MM/yyyy")</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
