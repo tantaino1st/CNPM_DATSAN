@@ -1,25 +1,200 @@
 @model IEnumerable<QUANLYSANBONG.Models.NhatKyThaoTac>
 @{
+    ViewData["Title"] = "Nhật ký hệ thống";
     Layout = "_AdminLayout";
 }
 
-<div class="page-card p-4">
-    <form class="row g-2 mb-3" method="get">
-        <div class="col-md-10"><input class="form-control" name="search" placeholder="Tim hanh dong, noi dung, nguoi dung" /></div>
-        <div class="col-md-2"><button class="btn btn-outline-secondary w-100">Tim</button></div>
-    </form>
-    <table class="table table-hover">
-        <thead class="table-light"><tr><th>Thoi gian</th><th>Nguoi dung</th><th>Hanh dong</th><th>Noi dung</th></tr></thead>
-        <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.ThoiGian.ToString("dd/MM/yyyy HH:mm:ss")</td>
-                <td>@item.NguoiDung?.TenDangNhap</td>
-                <td>@item.HanhDong</td>
-                <td>@item.NoiDung</td>
-            </tr>
-        }
-        </tbody>
-    </table>
+<style>
+    .log-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+    .filter-section {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+    .timeline-time {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+    .action-badge {
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .bg-action-create { background: #dcfce7; color: #15803d; }
+    .bg-action-update { background: #dbeafe; color: #1d4ed8; }
+    .bg-action-delete { background: #fee2e2; color: #b91c1c; }
+    .bg-action-login { background: #fef3c7; color: #92400e; }
+    .bg-action-default { background: #f1f5f9; color: #475569; }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        background: #e2e8f0;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+    .log-table th {
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        padding: 16px 24px;
+        border-top: none;
+    }
+    .log-table td {
+        padding: 16px 24px;
+        vertical-align: middle;
+        font-size: 0.875rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .log-row:hover {
+        background-color: #f8fafc;
+    }
+    .search-input {
+        border-radius: 10px;
+        padding-left: 40px;
+        border: 1px solid #e2e8f0;
+    }
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-1">Nhật ký thao tác</h3>
+        <p class="text-muted small mb-0">Theo dõi mọi hoạt động thay đổi trên hệ thống</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button onclick="window.location.reload()" class="btn btn-light border rounded-pill px-3">
+            <i class="fas fa-sync-alt me-2"></i>Làm mới
+        </button>
+        <button onclick="window.print()" class="btn btn-light border rounded-pill px-3">
+            <i class="fas fa-download me-2"></i>Xuất file
+        </button>
+    </div>
+</div>
+
+<div class="log-card p-0 overflow-hidden">
+    <div class="p-4 border-bottom">
+        <form method="get" class="row g-3">
+            <div class="col-md-6 position-relative">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="search" value="@Context.Request.Query["search"]" class="form-control search-input" placeholder="Tìm kiếm hành động, nội dung hoặc người dùng...">
+            </div>
+            <div class="col-md-3">
+                <select name="actionType" class="form-select" style="border-radius: 10px;">
+                    <option value="">Tất cả hành động</option>
+                    <option value="Thêm">Thêm mới</option>
+                    <option value="Sửa">Cập nhật</option>
+                    <option value="Xóa">Xóa bỏ</option>
+                    <option value="Đăng nhập">Đăng nhập</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100 rounded-3 shadow-sm" style="background: #2563eb; border: none; padding: 10px;">
+                    <i class="fas fa-filter me-2"></i>Áp dụng lọc
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table log-table mb-0">
+            <thead>
+                <tr>
+                    <th>Thời gian</th>
+                    <th>Người thực hiện</th>
+                    <th>Hành động</th>
+                    <th>Chi tiết nội dung</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        string actionClass = "bg-action-default";
+                        string actionIcon = "fa-circle-info";
+                        string hanhDong = item.HanhDong.ToLower();
+
+                        if (hanhDong.Contains("thêm") || hanhDong.Contains("tạo")) { actionClass = "bg-action-create"; actionIcon = "fa-plus-circle"; }
+                        else if (hanhDong.Contains("sửa") || hanhDong.Contains("cập nhật")) { actionClass = "bg-action-update"; actionIcon = "fa-edit"; }
+                        else if (hanhDong.Contains("xóa")) { actionClass = "bg-action-delete"; actionIcon = "fa-trash-alt"; }
+                        else if (hanhDong.Contains("đăng nhập")) { actionClass = "bg-action-login"; actionIcon = "fa-sign-in-alt"; }
+
+                        <tr class="log-row">
+                            <td style="width: 180px;">
+                                <div class="fw-bold text-dark">@item.ThoiGian.ToString("dd/MM/yyyy")</div>
+                                <div class="timeline-time">@item.ThoiGian.ToString("HH:mm:ss")</div>
+                            </td>
+                            <td style="width: 200px;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="user-avatar">
+                                        @(item.NguoiDung?.TenDangNhap?.Substring(0, 1).ToUpper() ?? "?")
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold text-dark">@item.NguoiDung?.TenDangNhap</div>
+                                        <div class="text-muted" style="font-size: 0.75rem;">ID: #@item.MaNguoiDung</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="width: 150px;">
+                                <span class="action-badge @actionClass">
+                                    <i class="fas @actionIcon me-1"></i> @item.HanhDong
+                                </span>
+                            </td>
+                            <td>
+                                <div class="text-wrap" style="max-width: 500px; line-height: 1.5;">
+                                    @item.NoiDung
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">
+                            <i class="fas fa-history fa-3x mb-3 opacity-20"></i>
+                            <p>Không tìm thấy dữ liệu nhật ký nào</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="p-3 border-top bg-light d-flex justify-content-between align-items-center">
+        <div class="text-muted small">
+            Hiển thị <strong>@Model.Count()</strong> bản ghi gần nhất
+        </div>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+            </ul>
+        </nav>
+    </div>
 </div>

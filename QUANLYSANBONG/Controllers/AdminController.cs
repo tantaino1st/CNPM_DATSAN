@@ -40,6 +40,39 @@ public class AdminController : Controller
         var khachMoiThangNay = await _context.KhachHangs
             .CountAsync(); // Trong thực tế nên có cột NgayTao
 
+        // Lấy doanh thu 7 ngày gần nhất
+        var sevenDaysAgo = today.AddDays(-6);
+        var doanhThu7Ngay = await _context.HoaDons
+            .Where(h => h.TrangThaiThanhToan == "Da thanh toan" && h.NgayThanhToan >= sevenDaysAgo)
+            .GroupBy(h => h.NgayThanhToan!.Value.Date)
+            .Select(g => new DoanhThuNgayViewModel
+            {
+                Ngay = g.Key.ToString("dd/MM"),
+                DoanhThu = g.Sum(h => h.TongTien)
+            })
+            .ToListAsync();
+
+        // Đảm bảo đủ 7 ngày (điền 0 nếu không có dữ liệu)
+        var listDoanhThu = new List<DoanhThuNgayViewModel>();
+        for (int i = 6; i >= 0; i--)
+        {
+            var date = today.AddDays(-i);
+            var dateStr = date.ToString("dd/MM");
+            var found = doanhThu7Ngay.FirstOrDefault(x => x.Ngay == dateStr);
+            listDoanhThu.Add(found ?? new DoanhThuNgayViewModel { Ngay = dateStr, DoanhThu = 0 });
+        }
+
+        // Thống kê theo loại sân
+        var thongKeLoaiSan = await _context.SanBongs
+            .Include(s => s.LoaiSan)
+            .GroupBy(s => s.LoaiSan!.TenLoaiSan)
+            .Select(g => new LoaiSanThongKeViewModel
+            {
+                TenLoai = g.Key ?? "Chưa phân loại",
+                SoLuong = g.Count()
+            })
+            .ToListAsync();
+
         // Lịch đặt gần nhất
         var dsDatSanGanDay = await _context.DatSans
             .Include(x => x.KhachHang)
@@ -55,26 +88,8 @@ public class AdminController : Controller
             SoSanHoatDong = dangHoatDong,
             TongSoSan = tongSan,
             KhachMoiThangNay = khachMoiThangNay,
-            
-            // Dữ liệu mẫu cho biểu đồ doanh thu (7 ngày gần nhất)
-            DoanhThuTheoNgay = new List<DoanhThuNgayViewModel>
-            {
-                new DoanhThuNgayViewModel { Ngay = today.AddDays(-3).ToString("dd/MM"), DoanhThu = 4500000 },
-                new DoanhThuNgayViewModel { Ngay = today.AddDays(-2).ToString("dd/MM"), DoanhThu = 3800000 },
-                new DoanhThuNgayViewModel { Ngay = today.AddDays(-1).ToString("dd/MM"), DoanhThu = 5200000 },
-                new DoanhThuNgayViewModel { Ngay = today.ToString("dd/MM"), DoanhThu = doanhThuHomNay > 0 ? doanhThuHomNay : 600000 }
-            },
-            
-            // Dữ liệu mẫu cho loại sân
-            ThongKeLoaiSan = new List<LoaiSanThongKeViewModel>
-            {
-                new LoaiSanThongKeViewModel { TenLoai = "Bóng đá", SoLuong = 12 },
-                new LoaiSanThongKeViewModel { TenLoai = "Cầu lông", SoLuong = 8 },
-                new LoaiSanThongKeViewModel { TenLoai = "Tennis", SoLuong = 4 },
-                new LoaiSanThongKeViewModel { TenLoai = "Pickleball", SoLuong = 6 },
-                new LoaiSanThongKeViewModel { TenLoai = "Bóng rổ", SoLuong = 3 }
-            },
-
+            DoanhThuTheoNgay = listDoanhThu,
+            ThongKeLoaiSan = thongKeLoaiSan,
             LichDatGanNhat = dsDatSanGanDay.Select(x => new LichDatGanNhatViewModel
             {
                 MaDatSan = x.MaDatSan,
@@ -88,5 +103,46 @@ public class AdminController : Controller
         };
 
         return View(viewModel);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetLatestNotifications()
+    {
+        var latestBookings = await _context.DatSans
+            .Include(d => d.KhachHang)
+            .OrderByDescending(d => d.NgayTao)
+            .Take(3)
+            .Select(d => new {
+                Type = "Booking",
+                Title = "Đơn đặt sân mới",
+                Content = $"Khách {d.KhachHang!.HoTen} vừa đặt sân vào {d.NgayDat:dd/MM}",
+                Time = d.NgayTao,
+                Icon = "fa-calendar-check",
+                Class = "bg-primary"
+            })
+            .ToListAsync();
+
+        var latestPayments = await _context.HoaDons
+            .Include(h => h.DatSan)
+                .ThenInclude(d => d!.KhachHang)
+            .OrderByDescending(h => h.NgayThanhToan)
+            .Take(3)
+            .Select(h => new {
+                Type = "Payment",
+                Title = "Thanh toán thành công",
+                Content = $"Hóa đơn #{h.MaHD:D5} - {h.TongTien:N0}đ",
+                Time = h.NgayThanhToan ?? DateTime.Now,
+                Icon = "fa-money-bill-wave",
+                Class = "bg-success"
+            })
+            .ToListAsync();
+
+        var allNotifications = latestBookings.Cast<object>()
+            .Concat(latestPayments.Cast<object>())
+            .OrderByDescending(x => (DateTime)x.GetType().GetProperty("Time")!.GetValue(x)!)
+            .Take(5)
+            .ToList();
+
+        return Json(allNotifications);
     }
 }

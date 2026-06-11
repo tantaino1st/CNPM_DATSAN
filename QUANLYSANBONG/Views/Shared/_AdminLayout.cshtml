@@ -101,16 +101,46 @@
                 </div>
             </div>
             <div class="d-flex align-items-center gap-3">
-                <button class="btn btn-light rounded-circle"><i class="fas fa-moon"></i></button>
-                <button class="btn btn-light rounded-circle position-relative">
-                    <i class="fas fa-bell"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger p-1" style="font-size: 0.5rem;">2</span>
+                <button class="btn btn-light rounded-circle" id="theme-toggle" title="Đổi giao diện">
+                    <i class="fas fa-moon"></i>
                 </button>
-                <div class="d-flex align-items-center gap-2 border-start ps-3">
-                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center position-relative" style="width: 35px; height: 35px;">
-                        A
-                        <span class="position-absolute bottom-0 end-0 badge rounded-circle bg-success border border-white p-1"></span>
-                    </div>
+                
+                <div class="dropdown">
+                    <button class="btn btn-light rounded-circle position-relative" data-bs-toggle="dropdown" aria-expanded="false" id="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger p-1 d-none" id="notification-badge" style="font-size: 0.5rem;">0</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-0 overflow-hidden" id="notification-list" style="width: 320px; border-radius: 12px;">
+                        <li class="p-3 border-bottom bg-light">
+                            <h6 class="mb-0 fw-bold">Thông báo</h6>
+                        </li>
+                        <li id="notification-items">
+                            <!-- Dữ liệu sẽ được load qua AJAX -->
+                            <div class="p-4 text-center text-muted small">Đang tải thông báo...</div>
+                        </li>
+                        <li>
+                            <a class="dropdown-item p-2 text-center small text-primary fw-bold" asp-controller="DatSan" asp-action="Index">Xem tất cả đơn đặt</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="dropdown border-start ps-3">
+                    <a href="#" class="d-flex align-items-center gap-2 text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center position-relative fw-bold" style="width: 38px; height: 38px;">
+                            @(Context.Session.GetString("TenDangNhap")?.Substring(0, 1).ToUpper() ?? "A")
+                            <span class="position-absolute bottom-0 end-0 badge rounded-circle bg-success border border-white p-1"></span>
+                        </div>
+                        <div class="d-none d-lg-block">
+                            <div class="fw-bold text-dark small" style="line-height: 1.2;">@Context.Session.GetString("TenDangNhap")</div>
+                            <div class="text-muted" style="font-size: 0.7rem;">@Context.Session.GetString("VaiTro")</div>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="border-radius: 12px; min-width: 200px;">
+                        <li><a class="dropdown-item py-2 px-3" asp-controller="Account" asp-action="Profile"><i class="fas fa-user-circle me-2 text-primary"></i> Hồ sơ của tôi</a></li>
+                        <li><a class="dropdown-item py-2 px-3" asp-controller="CaiDat" asp-action="Index"><i class="fas fa-cog me-2 text-secondary"></i> Cài đặt hệ thống</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item py-2 px-3 text-danger" asp-controller="Account" asp-action="Logout"><i class="fas fa-sign-out-alt me-2"></i> Đăng xuất</a></li>
+                    </ul>
                 </div>
             </div>
         </header>
@@ -143,6 +173,83 @@
         }
         setInterval(updateClock, 1000);
         updateClock();
+
+        // Xử lý Dark Mode
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const html = document.documentElement;
+
+        // Kiểm tra cài đặt trước đó
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            html.setAttribute('data-bs-theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = html.getAttribute('data-bs-theme') === 'dark';
+            if (isDark) {
+                html.removeAttribute('data-bs-theme');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-bs-theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // Tải thông báo thực tế
+        async function loadNotifications() {
+            try {
+                const response = await fetch('@Url.Action("GetLatestNotifications", "Admin")');
+                if (!response.ok) return;
+                const data = await response.json();
+                
+                const container = document.getElementById('notification-items');
+                const badge = document.getElementById('notification-badge');
+                
+                if (data && data.length > 0) {
+                    badge.textContent = data.length;
+                    badge.classList.remove('d-none');
+                    
+                    container.innerHTML = data.map(item => `
+                        <a class="dropdown-item p-3 border-bottom d-flex gap-3" href="${item.type === 'Booking' ? '/DatSan/Index' : '/HoaDon/Index'}">
+                            <div class="${item.class} bg-opacity-10 text-${item.class.split('-')[1]} rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; flex-shrink: 0;">
+                                <i class="fas ${item.icon}"></i>
+                            </div>
+                            <div style="white-space: normal;">
+                                <div class="small fw-bold">${item.title}</div>
+                                <div class="small text-muted">${item.content}</div>
+                                <div class="text-primary mt-1" style="font-size: 0.7rem;">${formatTime(item.time)}</div>
+                            </div>
+                        </a>
+                    `).join('');
+                } else {
+                    badge.classList.add('d-none');
+                    container.innerHTML = '<div class="p-4 text-center text-muted small">Không có thông báo mới</div>';
+                }
+            } catch (error) {
+                console.error('Lỗi tải thông báo:', error);
+            }
+        }
+
+        function formatTime(timeStr) {
+            const date = new Date(timeStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMins / 60)
+            
+            if (diffMins < 1) return 'Vừa xong';
+            if (diffMins < 60) return `${diffMins} phút trước`;
+            if (diffHours < 24) return `${diffHours} giờ trước`;
+            return date.toLocaleDateString('vi-VN');
+        }
+
+        // Tải thông báo khi mở trang và mỗi 5 phút
+        loadNotifications();
+        setInterval(loadNotifications, 300000);
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

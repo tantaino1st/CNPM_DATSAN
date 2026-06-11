@@ -1,157 +1,461 @@
 @{
-    ViewData["Title"] = "Báo Cáo Thống Kê";
+    ViewData["Title"] = "Báo cáo doanh thu";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    decimal tongDoanhThu = ViewBag.TongDoanhThu ?? 0m;
+    int tongHoaDon = ViewBag.TongHoaDon ?? 0;
+    decimal trungBinhGD = tongHoaDon > 0 ? tongDoanhThu / tongHoaDon : 0m;
+    
+    var doanhThuTheoNgay = ViewBag.DoanhThuTheoNgay as IEnumerable<dynamic>;
+    var labels = new List<string>();
+    var data = new List<decimal>();
+    if (doanhThuTheoNgay != null) {
+        foreach(var item in doanhThuTheoNgay) {
+            labels.Add(((DateTime)item.Ngay).ToString("dd/MM"));
+            data.Add((decimal)item.DoanhThu);
+        }
+    }
+    
+    var danhSachGiaoDich = ViewBag.DanhSachGiaoDich as IEnumerable<QUANLYSANBONG.Models.HoaDon>;
+
+    decimal chenhLech = ViewBag.ChenhLechKyTruoc ?? 0m;
+    string chenhLechClass = chenhLech >= 0 ? "text-success" : "text-danger";
+    string chenhLechIcon = chenhLech >= 0 ? "+" : "";
+
+    var luotDatTheoSan = ViewBag.LuotDatTheoSan as IEnumerable<dynamic>;
+    var labelsSan = new List<string>();
+    var dataSan = new List<int>();
+    if (luotDatTheoSan != null) {
+        foreach(var item in luotDatTheoSan) {
+            labelsSan.Add(item.TenSan);
+            dataSan.Add(item.LuotDat);
+        }
+    }
 }
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Tùy chọn Báo Cáo</h6>
-    </div>
-    <div class="card-body">
-        <form asp-action="Index" method="get">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label text-muted">Từ ngày</label>
-                    <input type="date" name="fromDate" value="@ViewData["FromDate"]" class="form-control" />
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label text-muted">Đến ngày</label>
-                    <input type="date" name="toDate" value="@ViewData["ToDate"]" class="form-control" />
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-filter"></i> Xem Báo Cáo</button>
-                    <button type="button" onclick="window.print()" class="btn btn-secondary ms-2"><i class="fa-solid fa-print"></i> In</button>
-                </div>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Biểu đồ Doanh thu
+            var ctx = document.getElementById('revenueChart').getContext('2d');
+            
+            var gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
+            gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(labels)),
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(data)),
+                        borderColor: '#2563eb',
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#2563eb',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            padding: 12,
+                            titleFont: { size: 13 },
+                            bodyFont: { size: 14, weight: 'bold' },
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y.toLocaleString('vi-VN') + ' đ';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: {
+                            grid: { color: '#f1f5f9' },
+                            ticks: {
+                                callback: function(value) {
+                                    if(value >= 1000000) return (value / 1000000) + 'M';
+                                    if(value >= 1000) return (value / 1000) + 'k';
+                                    return value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Biểu đồ Lượt đặt theo sân
+            var ctxSan = document.getElementById('fieldChart').getContext('2d');
+            new Chart(ctxSan, {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(labelsSan)),
+                    datasets: [{
+                        label: 'Lượt đặt',
+                        data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(dataSan)),
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 8,
+                        maxBarThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { 
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
+
+<style>
+    .page-header {
+        margin-bottom: 24px;
+    }
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+    .page-subtitle {
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+    .custom-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .custom-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    .filter-card {
+        margin-bottom: 24px;
+        padding: 20px;
+    }
+    .btn-primary-custom {
+        background-color: #2563eb;
+        border-color: #2563eb;
+        color: white;
+        transition: all 0.2s;
+    }
+    .btn-primary-custom:hover {
+        background-color: #1d4ed8;
+        border-color: #1d4ed8;
+        transform: scale(1.02);
+    }
+    .btn-outline-custom {
+        border: 1px solid #2563eb;
+        color: #2563eb;
+        background: white;
+        transition: all 0.2s;
+    }
+    .btn-outline-custom:hover {
+        background: #eff6ff;
+        color: #1d4ed8;
+        transform: scale(1.02);
+    }
+    .stat-card {
+        padding: 20px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+    .icon-green { background: #dcfce7; color: #22c55e; }
+    .icon-blue { background: #dbeafe; color: #3b82f6; }
+    .icon-yellow { background: #fef3c7; color: #f59e0b; }
+    .icon-pink { background: #fce7f3; color: #ec4899; }
+    
+    .stat-info {
+        flex: 1;
+    }
+    .stat-label {
+        font-size: 0.875rem;
+        color: #64748b;
+        margin-bottom: 4px;
+        font-weight: 500;
+    }
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+    }
+    .chart-card {
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+    .chart-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 20px;
+    }
+    .chart-container {
+        height: 350px;
+        width: 100%;
+    }
+    .table-card {
+        padding: 0;
+        overflow: hidden;
+    }
+    .table-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .table-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0;
+    }
+    .table-total {
+        font-size: 0.875rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+    .custom-table {
+        margin: 0;
+    }
+    .custom-table th {
+        background-color: #f8fafc;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.875rem;
+        padding: 12px 24px;
+        border-bottom: 1px solid #e2e8f0;
+        border-top: none;
+    }
+    .custom-table td {
+        padding: 16px 24px;
+        vertical-align: middle;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.875rem;
+    }
+    .custom-table tr:hover td {
+        background-color: #f8fafc;
+    }
+    .badge-status {
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .status-success {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+    .status-pending {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+    .empty-state {
+        padding: 40px 20px;
+        text-align: center;
+        color: #64748b;
+    }
+    .table-responsive::-webkit-scrollbar {
+        height: 6px;
+    }
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="page-title">Báo cáo doanh thu</h1>
+    <p class="page-subtitle">Thống kê tài chính chi tiết</p>
+</div>
+
+<!-- Bộ lọc -->
+<div class="custom-card filter-card">
+    <form asp-action="Index" method="get">
+        <div class="row align-items-end g-3">
+            <div class="col-md-3 col-sm-6">
+                <label class="form-label text-muted fw-medium" style="font-size: 0.875rem;">Từ ngày</label>
+                <input type="date" name="fromDate" value="@ViewData["FromDate"]" class="form-control" style="border-radius: 8px; border-color: #e2e8f0;" />
             </div>
-        </form>
+            <div class="col-md-3 col-sm-6">
+                <label class="form-label text-muted fw-medium" style="font-size: 0.875rem;">Đến ngày</label>
+                <input type="date" name="toDate" value="@ViewData["ToDate"]" class="form-control" style="border-radius: 8px; border-color: #e2e8f0;" />
+            </div>
+            <div class="col-md-6 col-sm-12 d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary-custom px-4" style="border-radius: 8px;">
+                    <i class="fa-solid fa-filter me-2"></i>Lọc
+                </button>
+                <button type="button" onclick="window.print()" class="btn btn-outline-custom px-4" style="border-radius: 8px;">
+                    <i class="fa-solid fa-download me-2"></i>Xuất báo cáo
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Thẻ thống kê -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="custom-card stat-card">
+            <div class="stat-icon icon-green">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">Doanh thu kỳ này</div>
+                <h3 class="stat-value">@string.Format("{0:N0}", tongDoanhThu)đ</h3>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+        <div class="custom-card stat-card">
+            <div class="stat-icon icon-blue">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">Số giao dịch</div>
+                <h3 class="stat-value">@string.Format("{0:N0}", tongHoaDon)</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="custom-card stat-card">
+            <div class="stat-icon icon-yellow">
+                <i class="fa-solid fa-calculator"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">Trung bình/giao dịch</div>
+                <h3 class="stat-value">@string.Format("{0:N0}", trungBinhGD)đ</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="custom-card stat-card">
+            <div class="stat-icon icon-pink">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">So kỳ trước</div>
+                <h3 class="stat-value @chenhLechClass">@chenhLechIcon@string.Format("{0:N0}", chenhLech)đ</h3>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Tổng quan báo cáo -->
-<div class="row mb-4">
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card card-stat border-left-success h-100 py-2 bg-success text-white">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-uppercase mb-1">Tổng Doanh Thu</div>
-                        <div class="h5 mb-0 font-weight-bold">@string.Format("{0:N0}", ViewBag.TongDoanhThu) đ</div>
-                    </div>
-                    <div class="col-auto"><i class="fa-solid fa-sack-dollar fa-2x text-white-50"></i></div>
-                </div>
+<!-- Biểu đồ -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="custom-card chart-card h-100">
+            <h3 class="chart-title">Doanh thu theo ngày</h3>
+            <div class="chart-container">
+                <canvas id="revenueChart"></canvas>
             </div>
         </div>
     </div>
-
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card card-stat border-left-info h-100 py-2 bg-info text-white">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-uppercase mb-1">Tiền Thuê Sân</div>
-                        <div class="h5 mb-0 font-weight-bold">@string.Format("{0:N0}", ViewBag.TongTienSan) đ</div>
-                    </div>
-                    <div class="col-auto"><i class="fa-solid fa-futbol fa-2x text-white-50"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card card-stat border-left-warning h-100 py-2 bg-warning text-dark">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-uppercase mb-1">Tiền Dịch Vụ</div>
-                        <div class="h5 mb-0 font-weight-bold">@string.Format("{0:N0}", ViewBag.TongTienDichVu) đ</div>
-                    </div>
-                    <div class="col-auto"><i class="fa-solid fa-burger fa-2x text-dark-50"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card card-stat border-left-primary h-100 py-2 bg-primary text-white">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-uppercase mb-1">Số Lượng Hóa Đơn</div>
-                        <div class="h5 mb-0 font-weight-bold">@ViewBag.TongHoaDon</div>
-                    </div>
-                    <div class="col-auto"><i class="fa-solid fa-file-invoice fa-2x text-white-50"></i></div>
-                </div>
+    <div class="col-lg-4">
+        <div class="custom-card chart-card h-100">
+            <h3 class="chart-title">Lượt đặt theo sân</h3>
+            <div class="chart-container">
+                <canvas id="fieldChart"></canvas>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <!-- Bảng Thống Kê Theo Ngày -->
-    <div class="col-lg-7">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Doanh Thu Theo Ngày</h6>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Ngày</th>
-                                <th class="text-end">Doanh Thu (VNĐ)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (ViewBag.DoanhThuTheoNgay != null)
-                            {
-                                foreach (var item in ViewBag.DoanhThuTheoNgay)
-                                {
-                                    <tr>
-                                        <td>@item.Ngay.ToString("dd/MM/yyyy")</td>
-                                        <td class="text-end fw-bold text-primary">@string.Format("{0:N0}", item.DoanhThu)</td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+<!-- Bảng giao dịch -->
+<div class="custom-card table-card mb-5">
+    <div class="table-header">
+        <h3 class="table-title">Danh sách giao dịch</h3>
+        <span class="table-total">Tổng: @tongHoaDon giao dịch</span>
     </div>
-
-    <!-- Bảng Thống Kê Sân Bóng -->
-    <div class="col-lg-5">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Lượt Đặt Theo Sân</h6>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Tên Sân</th>
-                                <th class="text-center">Số Lượt Đặt</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (ViewBag.LuotDatTheoSan != null)
-                            {
-                                foreach (var item in ViewBag.LuotDatTheoSan)
+    <div class="table-responsive">
+        <table class="table custom-table">
+            <thead>
+                <tr>
+                    <th>Mã GD</th>
+                    <th>Khách hàng</th>
+                    <th>Thời gian</th>
+                    <th class="text-end">Số tiền</th>
+                    <th>Thanh toán</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (danhSachGiaoDich != null && danhSachGiaoDich.Any())
+                {
+                    foreach (var item in danhSachGiaoDich)
+                    {
+                        <tr>
+                            <td class="fw-medium text-primary">#@item.MaHD.ToString("D5")</td>
+                            <td>
+                                @(item.DatSan?.KhachHang?.HoTen ?? "Khách lẻ")
+                            </td>
+                            <td>@(item.NgayThanhToan?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</td>
+                            <td class="text-end fw-semibold">@string.Format("{0:N0}", item.TongTien)đ</td>
+                            <td>@item.PhuongThucThanhToan</td>
+                            <td>
+                                @if (item.TrangThaiThanhToan == "Da thanh toan")
                                 {
-                                    <tr>
-                                        <td><strong>@item.TenSan</strong></td>
-                                        <td class="text-center">
-                                            <span class="badge bg-primary rounded-pill">@item.LuotDat</span>
-                                        </td>
-                                    </tr>
+                                    <span class="badge-status status-success">Thành công</span>
                                 }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+                                else
+                                {
+                                    <span class="badge-status status-pending">Đang xử lý</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fa-regular fa-folder-open mb-2" style="font-size: 2rem; color: #cbd5e1;"></i>
+                            <p class="m-0">Chưa có giao dịch nào</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>

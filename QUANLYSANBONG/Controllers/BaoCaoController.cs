@@ -39,6 +39,20 @@ public class BaoCaoController : Controller
         ViewBag.TongTienDichVu = tongTienDichVu;
         ViewBag.TongHoaDon = tongHoaDon;
 
+        // Tính doanh thu kỳ trước để so sánh
+        var duration = (toDate.Value - fromDate.Value).Days + 1;
+        var prevFromDate = fromDate.Value.AddDays(-duration);
+        var prevToDate = fromDate.Value.AddDays(-1);
+        
+        var doanhThuKyTruoc = await _context.HoaDons
+            .Where(h => h.TrangThaiThanhToan == "Da thanh toan" && 
+                        h.NgayThanhToan >= prevFromDate.Date && 
+                        h.NgayThanhToan <= prevToDate.Date.AddDays(1).AddTicks(-1))
+            .SumAsync(h => h.TongTien);
+            
+        ViewBag.DoanhThuKyTruoc = doanhThuKyTruoc;
+        ViewBag.ChenhLechKyTruoc = tongDoanhThu - doanhThuKyTruoc;
+
         // Thống kê theo ngày
         var doanhThuTheoNgay = await query
             .GroupBy(h => h.NgayThanhToan!.Value.Date)
@@ -53,7 +67,7 @@ public class BaoCaoController : Controller
 
         // Thống kê lượt đặt sân
         var dsDatSan = await _context.DatSans
-            .Where(d => d.TrangThai == "Da hoan thanh" && 
+            .Where(d => (d.TrangThai == "Da hoan thanh" || d.TrangThai == "Da thanh toan") && 
                         d.NgayDat >= fromDate.Value.Date && 
                         d.NgayDat <= toDate.Value.Date)
             .Include(d => d.SanBong)
@@ -66,6 +80,16 @@ public class BaoCaoController : Controller
             .ToListAsync();
 
         ViewBag.LuotDatTheoSan = dsDatSan;
+
+        // Thống kê danh sách giao dịch
+        var danhSachGiaoDich = await query
+            .Include(h => h.DatSan)
+                .ThenInclude(d => d!.KhachHang)
+            .OrderByDescending(h => h.NgayThanhToan)
+            .Take(50)
+            .ToListAsync();
+            
+        ViewBag.DanhSachGiaoDich = danhSachGiaoDich;
 
         return View();
     }
