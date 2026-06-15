@@ -27,11 +27,15 @@
             <div class="row g-4">
                 @foreach (var post in Model.BaiViet)
                 {
+                    var blogImg = !string.IsNullOrEmpty(post.AnhDaiDien) 
+                        ? (post.AnhDaiDien.StartsWith("http") ? post.AnhDaiDien : (post.AnhDaiDien.StartsWith("/") ? post.AnhDaiDien : "/" + post.AnhDaiDien)) 
+                        : "/images/default-blog.jpg";
+
                     <div class="col-md-6">
                         <div class="blog-card">
                             <div class="blog-card-img">
                                 <a asp-action="Details" asp-route-id="@post.Id">
-                                    <img src="@(string.IsNullOrEmpty(post.AnhDaiDien) ? "/images/default-blog.jpg" : post.AnhDaiDien)" alt="@post.TieuDe">
+                                    <img src="@blogImg" alt="@post.TieuDe">
                                 </a>
                                 <span class="category-badge">@post.Category?.TenDanhMuc</span>
                             </div>

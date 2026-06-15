@@ -293,15 +293,17 @@
             {
                 foreach (var san in Model.DanhSachSan)
                 {
-                    var imgUrl = !string.IsNullOrEmpty(san.HinhAnh) ? san.HinhAnh : "https://via.placeholder.com/150x110.png?text=No+Image";
+                    var imgUrl = !string.IsNullOrEmpty(san.HinhAnh) 
+                        ? (san.HinhAnh.StartsWith("http") ? san.HinhAnh : (san.HinhAnh.StartsWith("/") ? san.HinhAnh : "/" + san.HinhAnh)) 
+                        : "https://via.placeholder.com/150x110.png?text=No+Image";
                     
                     <div class="san-card">
                         <img src="@imgUrl" alt="@san.TenSan" class="san-img" onerror="this.src='https://via.placeholder.com/150x110.png?text=No+Image'">
                         
                         <div class="san-info">
-                            <a href="#" class="san-title">@san.TenSan</a>
+                            <a asp-action="Details" asp-route-id="@san.MaSan" class="san-title">@san.TenSan</a>
                             <p class="san-address"><i class="fa-solid fa-location-dot text-danger me-1"></i> @(san.DiaChi ?? "Đang cập nhật địa chỉ")</p>
-                            <a href="#" class="text-decoration-none text-muted small"><i class="fa-solid fa-circle-info me-1"></i> Xem chi tiết</a>
+                            <a asp-action="Details" asp-route-id="@san.MaSan" class="text-decoration-none text-muted small"><i class="fa-solid fa-circle-info me-1"></i> Xem chi tiết</a>
                         </div>
 
                         <div class="san-action">

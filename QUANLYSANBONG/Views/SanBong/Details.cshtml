@@ -5,7 +5,12 @@
 
 <style>
     .details-hero {
-        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('@(string.IsNullOrEmpty(Model.HinhAnh) ? "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2070" : Model.HinhAnh)') no-repeat center center/cover;
+        @{
+            var heroImg = !string.IsNullOrEmpty(Model.HinhAnh) 
+                ? (Model.HinhAnh.StartsWith("http") ? Model.HinhAnh : (Model.HinhAnh.StartsWith("/") ? Model.HinhAnh : "/" + Model.HinhAnh)) 
+                : "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2070";
+        }
+        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('@heroImg') no-repeat center center/cover;
         padding: 100px 0;
         color: white;
         margin-bottom: 50px;
